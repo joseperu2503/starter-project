@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/routes/app_routes.dart';
 import 'package:newsly/config/theme/app_theme.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
+import 'package:newsly/features/articles/presentation/screens/home_screen.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/auth/presentation/screens/login_screen.dart';
 import 'package:newsly/firebase_options.dart';
 import 'package:newsly/injection_container.dart';
+
+final _navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,37 +32,35 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => sl<AuthBloc>()..add(const CheckAuthEvent())),
         BlocProvider.value(value: sl<ThemeCubit>()),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, themeMode) {
-          return MaterialApp(
-            title: 'Newsly',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: themeMode,
-            onGenerateRoute: AppRoutes.onGenerateRoute,
-            home: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                if (state is AuthAuthenticated) {
-                  return const _HomeWrapper();
-                }
-                return const LoginScreen();
-              },
-            ),
-          );
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthAuthenticated) {
+            _navigatorKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (_) => false,
+            );
+          } else if (state is AuthUnauthenticated) {
+            _navigatorKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (_) => false,
+            );
+          }
         },
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return MaterialApp(
+              navigatorKey: _navigatorKey,
+              title: 'Newsly',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: themeMode,
+              onGenerateRoute: AppRoutes.onGenerateRoute,
+              home: const LoginScreen(),
+            );
+          },
+        ),
       ),
-    );
-  }
-}
-
-class _HomeWrapper extends StatelessWidget {
-  const _HomeWrapper();
-
-  @override
-  Widget build(BuildContext context) {
-    return Navigator(
-      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }
