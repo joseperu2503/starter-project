@@ -2,6 +2,55 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+
+    // ─── Articles ────────────────────────────────────────────────────────────
+    match /articles/{articleId} {
+
+      // Anyone (authenticated or not) can read published articles
+      allow read: if resource.data.isPublished == true;
+
+      // Authenticated journalists can read their own drafts
+      allow read: if request.auth != null
+                  && resource.data.authorId == request.auth.uid;
+
+      // Only authenticated users can create articles
+      // and the authorId must match the caller's UID
+      allow create: if request.auth != null
+                    && request.resource.data.authorId == request.auth.uid
+                    && isValidArticle(request.resource.data);
+
+      // Only the original author can update their own article
+      allow update: if request.auth != null
+                    && resource.data.authorId == request.auth.uid
+                    && request.resource.data.authorId == request.auth.uid
+                    && isValidArticle(request.resource.data);
+
+      // Only the original author can delete their own article
+      allow delete: if request.auth != null
+                    && resource.data.authorId == request.auth.uid;
+    }
   }
+}
+
+// ─── Validation Functions ──────────────────────────────────────────────────
+
+// Validates that an article document has all required fields with correct types
+function isValidArticle(data) {
+  return data.keys().hasAll([
+           'id', 'authorId', 'author', 'title',
+           'description', 'content', 'thumbnailPath',
+           'thumbnailURL', 'publishedAt', 'updatedAt', 'isPublished'
+         ])
+      && data.id is string        && data.id.size() > 0
+      && data.authorId is string  && data.authorId.size() > 0
+      && data.author is string    && data.author.size() > 0
+      && data.title is string     && data.title.size() > 0
+                                  && data.title.size() <= 200
+      && data.description is string && data.description.size() <= 500
+      && data.content is string   && data.content.size() > 0
+      && data.thumbnailPath is string
+      && data.thumbnailURL is string
+      && data.publishedAt is timestamp
+      && data.updatedAt is timestamp
+      && data.isPublished is bool;
 }
