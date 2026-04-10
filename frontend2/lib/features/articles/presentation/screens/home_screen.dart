@@ -9,6 +9,9 @@ import 'package:newsly/features/articles/presentation/bloc/remote/remote_article
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_state.dart';
 import 'package:newsly/features/articles/presentation/widgets/article_tile.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/injection_container.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -47,10 +50,56 @@ class _HomeView extends StatelessWidget {
             tooltip: 'Saved Articles',
           ),
           IconButton(
+            icon: const Icon(Icons.newspaper_outlined),
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.myFirestoreArticles),
+            tooltip: 'My Articles',
+          ),
+          IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () =>
                 Navigator.pushNamed(context, AppRoutes.uploadArticle),
             tooltip: 'Write Article',
+          ),
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              final name = state is AuthAuthenticated
+                  ? state.user.displayName
+                  : '';
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.account_circle_outlined),
+                tooltip: name,
+                onSelected: (value) {
+                  if (value == 'signout') {
+                    context.read<AuthBloc>().add(const SignOutEvent());
+                  }
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    value: 'signout',
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, size: 18, color: AppTheme.accent),
+                        SizedBox(width: 8),
+                        Text('Sign Out',
+                            style: TextStyle(color: AppTheme.accent)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -68,10 +117,11 @@ class _HomeView extends StatelessWidget {
                   const Icon(Icons.error_outline,
                       size: 48, color: AppTheme.accent),
                   const SizedBox(height: 12),
-                  Text(state.message,
-                      textAlign: TextAlign.center,
-                      style:
-                          const TextStyle(color: AppTheme.textSecondary)),
+                  Text(
+                    state.message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppTheme.textSecondary),
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context

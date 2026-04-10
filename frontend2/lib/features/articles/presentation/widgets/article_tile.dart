@@ -9,6 +9,7 @@ class ArticleTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onSave;
   final bool isSaved;
+  final Widget? trailing;
 
   const ArticleTile({
     super.key,
@@ -16,6 +17,7 @@ class ArticleTile extends StatelessWidget {
     required this.onTap,
     this.onSave,
     this.isSaved = false,
+    this.trailing,
   });
 
   @override
@@ -130,6 +132,10 @@ class ArticleTile extends StatelessWidget {
                                   : AppTheme.textSecondary,
                             ),
                           ),
+                        ],
+                        if (trailing != null) ...[
+                          const SizedBox(width: 4),
+                          trailing!,
                         ],
                       ],
                     ),
