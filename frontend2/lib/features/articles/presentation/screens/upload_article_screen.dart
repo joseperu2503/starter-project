@@ -41,7 +41,6 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _contentController = TextEditingController();
-  final _authorController = TextEditingController();
   final _categoryController = TextEditingController();
 
   File? _thumbnail;
@@ -55,7 +54,6 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
       _titleController.text = widget.article!.title;
       _descriptionController.text = widget.article!.description;
       _contentController.text = widget.article!.content;
-      _authorController.text = widget.article!.author;
       _categoryController.text = widget.article!.category ?? '';
       _isPublished = widget.article!.isPublished;
     }
@@ -66,7 +64,6 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
     _titleController.dispose();
     _descriptionController.dispose();
     _contentController.dispose();
-    _authorController.dispose();
     _categoryController.dispose();
     super.dispose();
   }
@@ -88,13 +85,19 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
       return;
     }
 
+    final authState = context.read<AuthBloc>().state;
+    final authorId =
+        authState is AuthAuthenticated ? authState.user.id : '';
+    final authorName =
+        authState is AuthAuthenticated ? authState.user.displayName : '';
+
     final now = DateTime.now();
 
     if (_isEditing) {
       final updated = ArticleEntity(
         id: widget.article!.id,
         authorId: widget.article!.authorId,
-        author: _authorController.text.trim(),
+        author: widget.article!.author,
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         content: _contentController.text.trim(),
@@ -108,19 +111,14 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
         isPublished: _isPublished,
       );
       context.read<RemoteArticleBloc>().add(
-            UpdateArticleEvent(
-              article: updated,
-              newThumbnail: _thumbnail,
-            ),
+            UpdateArticleEvent(article: updated, newThumbnail: _thumbnail),
           );
     } else {
-      final authState = context.read<AuthBloc>().state;
-      final authorId = authState is AuthAuthenticated ? authState.user.id : '';
       final id = const Uuid().v4();
       final article = ArticleEntity(
         id: id,
         authorId: authorId,
-        author: _authorController.text.trim(),
+        author: authorName,
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         content: _contentController.text.trim(),
@@ -141,6 +139,10 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+    final authorName =
+        authState is AuthAuthenticated ? authState.user.displayName : '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Article' : 'Write Article'),
@@ -193,7 +195,8 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.add_photo_alternate_outlined,
-                                      size: 48, color: AppTheme.textSecondary),
+                                      size: 48,
+                                      color: AppTheme.textSecondary),
                                   SizedBox(height: 8),
                                   Text('Tap to select thumbnail',
                                       style: TextStyle(
@@ -204,11 +207,29 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    _buildField(
-                      controller: _authorController,
-                      label: 'Author name',
-                      validator: (v) =>
-                          v!.trim().isEmpty ? 'Author is required' : null,
+                    // Author display (read-only)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: AppTheme.background,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.person_outline,
+                              size: 18, color: AppTheme.textSecondary),
+                          const SizedBox(width: 8),
+                          Text(
+                            authorName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     _buildField(
@@ -259,7 +280,9 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                                 color: Colors.white,
                               ),
                             )
-                          : Text(_isEditing ? 'Update Article' : 'Publish Article'),
+                          : Text(_isEditing
+                              ? 'Update Article'
+                              : 'Publish Article'),
                     ),
                     const SizedBox(height: 40),
                   ],
