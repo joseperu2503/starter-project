@@ -246,6 +246,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get selectLanguage => 'Selecciona tu idioma preferido';
 
   @override
+  String get followers => 'seguidores';
+
+  @override
+  String get follow => 'Seguir';
+
+  @override
+  String get unfollow => 'Dejar de seguir';
+
+  @override
   String get welcomeTitle => 'Bienvenido a Newsly';
 
   @override

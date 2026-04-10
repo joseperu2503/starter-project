@@ -7,6 +7,8 @@ import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_state.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newsly/features/social/presentation/screens/author_profile_screen.dart';
 import 'package:newsly/injection_container.dart';
 
 class ArticleDetailScreen extends StatelessWidget {
@@ -118,11 +120,27 @@ class _ArticleDetailView extends StatelessWidget {
                           size: 16,
                           color: cs.onSurface.withValues(alpha: 0.6)),
                       const SizedBox(width: 4),
-                      Text(
-                        article.author,
-                        style: TextStyle(
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BlocProvider.value(
+                              value: context.read<AuthBloc>(),
+                              child: AuthorProfileScreen(
+                                authorId: article.authorId,
+                                authorName: article.author,
+                              ),
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          article.author,
+                          style: TextStyle(
                             fontSize: 13,
-                            color: cs.onSurface.withValues(alpha: 0.6)),
+                            color: AppTheme.accent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                       const Spacer(),
                       Icon(Icons.calendar_today_outlined,

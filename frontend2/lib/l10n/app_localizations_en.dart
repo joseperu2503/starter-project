@@ -240,6 +240,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectLanguage => 'Select your preferred language';
 
   @override
+  String get followers => 'followers';
+
+  @override
+  String get follow => 'Follow';
+
+  @override
+  String get unfollow => 'Unfollow';
+
+  @override
   String get welcomeTitle => 'Welcome to Newsly';
 
   @override

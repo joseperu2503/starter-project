@@ -88,6 +88,9 @@
   "somethingWentWrong": "Algo salió mal",
 
   "selectLanguage": "Selecciona tu idioma preferido",
+  "followers": "seguidores",
+  "follow": "Seguir",
+  "unfollow": "Dejar de seguir",
 
   "welcomeTitle": "Bienvenido a Newsly",
   "welcomeSubtitle": "Tu fuente principal de las últimas noticias",

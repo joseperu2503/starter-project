@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
+import 'package:newsly/core/services/notification_service.dart';
+import 'package:newsly/features/social/data/social_remote_data_source.dart';
+import 'package:newsly/features/social/presentation/bloc/social_bloc.dart';
 
 import 'package:newsly/features/articles/data/data_sources/local/app_database.dart';
 import 'package:newsly/features/articles/data/data_sources/remote/firestore_article_data_source.dart';
@@ -43,7 +47,15 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => FirebaseMessaging.instance);
   sl.registerLazySingleton(() => AppDatabase());
+
+  // ── Notifications ───────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => NotificationService(sl()));
+
+  // ── Social ──────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => SocialRemoteDataSource(sl(), sl()));
+  sl.registerFactory(() => SocialBloc(sl()));
 
   // ── Auth ────────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => FirebaseAuthDataSource(sl()));
@@ -57,6 +69,7 @@ Future<void> initDependencies() async {
       register: sl(),
       signOut: sl(),
       authRepository: sl(),
+      socialDataSource: sl(),
     ),
   );
 

@@ -6,22 +6,26 @@ import 'package:newsly/features/auth/domain/use_cases/sign_out.dart';
 import 'package:newsly/features/auth/domain/repository/auth_repository.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
+import 'package:newsly/features/social/data/social_remote_data_source.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignIn _signIn;
   final Register _register;
   final SignOut _signOut;
   final AuthRepository _authRepository;
+  final SocialRemoteDataSource _socialDataSource;
 
   AuthBloc({
     required SignIn signIn,
     required Register register,
     required SignOut signOut,
     required AuthRepository authRepository,
+    required SocialRemoteDataSource socialDataSource,
   })  : _signIn = signIn,
         _register = register,
         _signOut = signOut,
         _authRepository = authRepository,
+        _socialDataSource = socialDataSource,
         super(const AuthInitial()) {
     on<CheckAuthEvent>(_onCheckAuth);
     on<SignInEvent>(_onSignIn);
@@ -34,6 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final user = _authRepository.getCurrentUser();
     if (user != null) {
       emit(AuthAuthenticated(user));
+      _socialDataSource.saveUserToken(user.id, user.displayName);
     } else {
       emit(const AuthUnauthenticated());
     }
@@ -46,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         SignInParams(email: event.email, password: event.password),
       );
       emit(AuthAuthenticated(user));
+      _socialDataSource.saveUserToken(user.id, user.displayName);
     } catch (e) {
       emit(AuthError(_parseError(e)));
     }
@@ -62,6 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
       emit(AuthAuthenticated(user));
+      _socialDataSource.saveUserToken(user.id, user.displayName);
     } catch (e) {
       emit(AuthError(_parseError(e)));
     }

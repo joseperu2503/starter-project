@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
+import 'package:newsly/core/services/notification_service.dart';
 import 'package:newsly/config/routes/app_routes.dart';
 import 'package:newsly/config/theme/app_theme.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
@@ -22,6 +23,7 @@ void main() async {
   await initDependencies();
   await sl<ThemeCubit>().loadTheme();
   await sl<LocaleCubit>().loadLocale();
+  await sl<NotificationService>().initialize();
   runApp(const App());
 }
 

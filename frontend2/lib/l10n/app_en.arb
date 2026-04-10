@@ -88,6 +88,9 @@
   "somethingWentWrong": "Something went wrong",
 
   "selectLanguage": "Select your preferred language",
+  "followers": "followers",
+  "follow": "Follow",
+  "unfollow": "Unfollow",
 
   "welcomeTitle": "Welcome to Newsly",
   "welcomeSubtitle": "Your go-to source for the latest stories",

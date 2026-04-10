@@ -554,6 +554,24 @@ abstract class AppLocalizations {
   /// **'Select your preferred language'**
   String get selectLanguage;
 
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'followers'**
+  String get followers;
+
+  /// No description provided for @follow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get follow;
+
+  /// No description provided for @unfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get unfollow;
+
   /// No description provided for @welcomeTitle.
   ///
   /// In en, this message translates to:
