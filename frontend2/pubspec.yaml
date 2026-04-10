@@ -21,8 +21,10 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_hooks: ^0.21.3+1
   get_it: ^9.2.1
+  image_picker: ^1.1.2
   intl: ^0.20.2
   ionicons: ^0.2.2
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
