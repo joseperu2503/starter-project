@@ -5,6 +5,7 @@ import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/auth/presentation/screens/register_screen.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,6 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -64,36 +68,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Sign in to share your stories',
-                      style: TextStyle(
-                          fontSize: 15, color: AppTheme.textSecondary),
+                    Text(
+                      l10n.signInSubtitle,
+                      style: TextStyle(fontSize: 15, color: cs.onSurface.withValues(alpha: 0.6)),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                      validator: (v) =>
-                          v!.trim().isEmpty ? 'Email is required' : null,
+                      decoration: InputDecoration(labelText: l10n.emailLabel),
+                      validator: (v) => v!.trim().isEmpty ? l10n.emailRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: l10n.passwordLabel,
                         suffixIcon: IconButton(
                           icon: Icon(_obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined),
-                          onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      validator: (v) =>
-                          v!.isEmpty ? 'Password is required' : null,
+                      validator: (v) => v!.isEmpty ? l10n.passwordRequired : null,
                     ),
                     const SizedBox(height: 28),
                     BlocBuilder<AuthBloc, AuthState>(
@@ -105,12 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                 )
-                              : const Text('Sign In'),
+                              : Text(l10n.signIn),
                         );
                       },
                     ),
@@ -118,20 +115,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account? ",
-                            style: TextStyle(color: AppTheme.textSecondary)),
+                        Text(l10n.noAccount,
+                            style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6))),
                         GestureDetector(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => BlocProvider.value(
-                                      value: context.read<AuthBloc>(),
-                                      child: const RegisterScreen(),
-                                    )),
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<AuthBloc>(),
+                                child: const RegisterScreen(),
+                              ),
+                            ),
                           ),
-                          child: const Text(
-                            'Register',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.register,
+                            style: const TextStyle(
                               color: AppTheme.accent,
                               fontWeight: FontWeight.w700,
                             ),

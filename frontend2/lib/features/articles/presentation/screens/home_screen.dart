@@ -12,7 +12,7 @@ import 'package:newsly/features/articles/presentation/widgets/article_tile.dart'
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/screens/profile_screen.dart';
 import 'package:newsly/injection_container.dart';
-
+import 'package:newsly/l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,12 +22,10 @@ class HomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => sl<RemoteArticleBloc>()
-            ..add(const GetPublishedArticlesEvent()),
+          create: (_) => sl<RemoteArticleBloc>()..add(const GetPublishedArticlesEvent()),
         ),
         BlocProvider(
-          create: (_) => sl<LocalArticleBloc>()
-            ..add(const GetSavedArticlesEvent()),
+          create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticlesEvent()),
         ),
       ],
       child: const _HomeView(),
@@ -40,43 +38,41 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Newsly'),
+        title: Text(l10n.home),
         actions: [
           IconButton(
             icon: const Icon(Icons.bookmark_outline),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.myArticles),
-            tooltip: 'Saved Articles',
+            tooltip: l10n.savedArticles,
           ),
           IconButton(
             icon: const Icon(Icons.newspaper_outlined),
             onPressed: () async {
-              await Navigator.pushNamed(
-                  context, AppRoutes.myFirestoreArticles);
+              await Navigator.pushNamed(context, AppRoutes.myFirestoreArticles);
               if (context.mounted) {
-                context
-                    .read<RemoteArticleBloc>()
-                    .add(const GetPublishedArticlesEvent());
+                context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
               }
             },
-            tooltip: 'My Articles',
+            tooltip: l10n.myArticles,
           ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () async {
               await Navigator.pushNamed(context, AppRoutes.uploadArticle);
               if (context.mounted) {
-                context
-                    .read<RemoteArticleBloc>()
-                    .add(const GetPublishedArticlesEvent());
+                context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
               }
             },
-            tooltip: 'Write Article',
+            tooltip: l10n.writeArticle,
           ),
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
-            tooltip: 'Profile',
+            tooltip: l10n.profile,
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -100,20 +96,19 @@ class _HomeView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 48, color: AppTheme.accent),
+                  const Icon(Icons.error_outline, size: 48, color: AppTheme.accent),
                   const SizedBox(height: 12),
                   Text(
                     state.message,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6)),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context
                         .read<RemoteArticleBloc>()
                         .add(const GetPublishedArticlesEvent()),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -122,11 +117,11 @@ class _HomeView extends StatelessWidget {
 
           if (state is RemoteArticlesLoaded) {
             if (state.articles.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No articles yet.\nBe the first to write one!',
+                  l10n.noArticlesYet,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+                  style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6), fontSize: 16),
                 ),
               );
             }

@@ -3,14 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/theme/app_theme.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class PersonalInfoScreen extends StatelessWidget {
   const PersonalInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Personal Information')),
+      appBar: AppBar(title: Text(l10n.personalInfoTitle)),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final user = state is AuthAuthenticated ? state.user : null;
@@ -36,19 +39,19 @@ class PersonalInfoScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               _InfoTile(
-                label: 'Display Name',
+                label: l10n.displayNameInfo,
                 value: user?.displayName ?? '-',
                 icon: Icons.person_outline,
               ),
               const SizedBox(height: 12),
               _InfoTile(
-                label: 'Email',
+                label: l10n.emailInfo,
                 value: user?.email ?? '-',
                 icon: Icons.email_outlined,
               ),
               const SizedBox(height: 12),
               _InfoTile(
-                label: 'User ID',
+                label: l10n.userIdInfo,
                 value: user?.id ?? '-',
                 icon: Icons.fingerprint,
               ),
@@ -65,11 +68,7 @@ class _InfoTile extends StatelessWidget {
   final String value;
   final IconData icon;
 
-  const _InfoTile({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
+  const _InfoTile({required this.label, required this.value, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -97,13 +96,7 @@ class _InfoTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: cs.onSurface,
-                ),
-              ),
+              Text(value, style: TextStyle(fontSize: 15, color: cs.onSurface)),
             ],
           ),
         ],

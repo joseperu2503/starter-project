@@ -7,30 +7,29 @@ import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/auth/presentation/screens/change_password_screen.dart';
 import 'package:newsly/features/auth/presentation/screens/personal_info_screen.dart';
+import 'package:newsly/features/auth/presentation/screens/language_screen.dart';
 import 'package:newsly/injection_container.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final user = state is AuthAuthenticated ? state.user : null;
 
           return ListView(
             children: [
-              // ── User header ────────────────────────────────────────
               Container(
                 color: cs.surface,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 28,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -65,10 +64,7 @@ class ProfileScreen extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             user?.email ?? '',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: cs.onSurface.withValues(alpha: 0.6),
-                            ),
+                            style: TextStyle(fontSize: 13, color: cs.onSurface.withValues(alpha: 0.6)),
                           ),
                         ],
                       ),
@@ -79,11 +75,10 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // ── Account section ────────────────────────────────────
-              _SectionHeader(title: 'Account'),
+              _SectionHeader(title: l10n.account),
               _ProfileTile(
                 icon: Icons.person_outline,
-                title: 'Personal Information',
+                title: l10n.personalInformation,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -96,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               _ProfileTile(
                 icon: Icons.lock_outline,
-                title: 'Change Password',
+                title: l10n.changePassword,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -110,17 +105,14 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // ── Preferences section ────────────────────────────────
-              _SectionHeader(title: 'Preferences'),
+              _SectionHeader(title: l10n.preferences),
               BlocBuilder<ThemeCubit, ThemeMode>(
                 bloc: sl<ThemeCubit>(),
                 builder: (context, themeMode) {
                   final isDark = themeMode == ThemeMode.dark;
                   return _ProfileTile(
-                    icon: isDark
-                        ? Icons.dark_mode
-                        : Icons.dark_mode_outlined,
-                    title: 'Dark Mode',
+                    icon: isDark ? Icons.dark_mode : Icons.dark_mode_outlined,
+                    title: l10n.darkMode,
                     trailing: Switch(
                       value: isDark,
                       onChanged: (_) => sl<ThemeCubit>().toggleTheme(),
@@ -132,21 +124,22 @@ class ProfileScreen extends StatelessWidget {
               ),
               _ProfileTile(
                 icon: Icons.language_outlined,
-                title: 'Language',
-                trailing: const _ComingSoonBadge(),
-                onTap: null,
+                title: l10n.language,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LanguageScreen()),
+                ),
               ),
 
               const SizedBox(height: 8),
 
-              // ── Sign out ───────────────────────────────────────────
-              _SectionHeader(title: 'Session'),
+              _SectionHeader(title: l10n.session),
               _ProfileTile(
                 icon: Icons.logout,
-                title: 'Sign Out',
+                title: l10n.signOut,
                 titleColor: AppTheme.accent,
                 iconColor: AppTheme.accent,
-                onTap: () => _confirmSignOut(context),
+                onTap: () => _confirmSignOut(context, l10n),
               ),
 
               const SizedBox(height: 32),
@@ -157,23 +150,20 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmSignOut(BuildContext context) async {
+  Future<void> _confirmSignOut(BuildContext context, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(l10n.signOutConfirmTitle),
+        content: Text(l10n.signOutConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Sign Out',
-              style: TextStyle(color: AppTheme.accent),
-            ),
+            child: Text(l10n.signOut, style: const TextStyle(color: AppTheme.accent)),
           ),
         ],
       ),
@@ -183,8 +173,6 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   final String title;
@@ -240,35 +228,11 @@ class _ProfileTile extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        trailing:
-            trailing ??
+        trailing: trailing ??
             (onTap != null
                 ? Icon(Icons.chevron_right, color: cs.onSurface.withValues(alpha: 0.4))
                 : null),
         onTap: onTap,
-      ),
-    );
-  }
-}
-
-class _ComingSoonBadge extends StatelessWidget {
-  const _ComingSoonBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: AppTheme.accent.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: const Text(
-        'Soon',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: AppTheme.accent,
-        ),
       ),
     );
   }

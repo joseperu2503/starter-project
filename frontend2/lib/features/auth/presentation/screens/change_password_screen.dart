@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:newsly/config/theme/app_theme.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -29,7 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
 
     try {
@@ -44,17 +44,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password updated successfully')),
+          SnackBar(content: Text(l10n.passwordUpdated)),
         );
       }
     } on FirebaseAuthException catch (e) {
-      String message = 'Something went wrong';
-      if (e.code == 'wrong-password') message = 'Current password is incorrect';
-      if (e.code == 'weak-password') message = 'New password is too weak';
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
-      }
+      if (!mounted) return;
+      final l = AppLocalizations.of(context)!;
+      String message = l.somethingWentWrong;
+      if (e.code == 'wrong-password') message = l.wrongPassword;
+      if (e.code == 'weak-password') message = l.weakPassword;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -62,8 +61,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Change Password')),
+      appBar: AppBar(title: Text(l10n.changePasswordTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -71,40 +72,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Enter your current password and choose a new one.',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              Text(
+                l10n.changePasswordSubtitle,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 28),
               _buildPasswordField(
                 controller: _currentController,
-                label: 'Current Password',
+                label: l10n.currentPassword,
                 obscure: _obscureCurrent,
-                onToggle: () =>
-                    setState(() => _obscureCurrent = !_obscureCurrent),
-                validator: (v) =>
-                    v!.isEmpty ? 'Current password is required' : null,
+                onToggle: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                validator: (v) => v!.isEmpty ? l10n.currentPasswordRequired : null,
               ),
               const SizedBox(height: 16),
               _buildPasswordField(
                 controller: _newController,
-                label: 'New Password',
+                label: l10n.newPassword,
                 obscure: _obscureNew,
                 onToggle: () => setState(() => _obscureNew = !_obscureNew),
-                validator: (v) => v!.length < 6
-                    ? 'Password must be at least 6 characters'
-                    : null,
+                validator: (v) => v!.length < 6 ? l10n.passwordMinLength : null,
               ),
               const SizedBox(height: 16),
               _buildPasswordField(
                 controller: _confirmController,
-                label: 'Confirm New Password',
+                label: l10n.confirmNewPassword,
                 obscure: _obscureConfirm,
-                onToggle: () =>
-                    setState(() => _obscureConfirm = !_obscureConfirm),
-                validator: (v) => v != _newController.text
-                    ? 'Passwords do not match'
-                    : null,
+                onToggle: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                validator: (v) => v != _newController.text ? l10n.passwordsDoNotMatch : null,
               ),
               const SizedBox(height: 28),
               ElevatedButton(
@@ -113,10 +110,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('Update Password'),
+                    : Text(l10n.updatePassword),
               ),
             ],
           ),
@@ -139,9 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       decoration: InputDecoration(
         labelText: label,
         suffixIcon: IconButton(
-          icon: Icon(obscure
-              ? Icons.visibility_outlined
-              : Icons.visibility_off_outlined),
+          icon: Icon(obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
           onPressed: onToggle,
         ),
       ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/routes/app_routes.dart';
-import 'package:newsly/config/theme/app_theme.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_state.dart';
 import 'package:newsly/features/articles/presentation/widgets/article_tile.dart';
 import 'package:newsly/injection_container.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class MyArticlesScreen extends StatelessWidget {
   const MyArticlesScreen({super.key});
@@ -14,8 +14,7 @@ class MyArticlesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          sl<LocalArticleBloc>()..add(const GetSavedArticlesEvent()),
+      create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticlesEvent()),
       child: const _MyArticlesView(),
     );
   }
@@ -26,15 +25,17 @@ class _MyArticlesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Articles'),
+        title: Text(l10n.savedArticlesTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.uploadArticle),
-            tooltip: 'Write Article',
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.uploadArticle),
+            tooltip: l10n.writeArticle,
           ),
         ],
       ),
@@ -48,25 +49,23 @@ class _MyArticlesView extends StatelessWidget {
             return Center(
               child: Text(
                 state.message,
-                style: const TextStyle(color: AppTheme.textSecondary),
+                style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6)),
               ),
             );
           }
 
           if (state is LocalArticlesLoaded) {
             if (state.articles.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.bookmark_border,
-                        size: 64, color: AppTheme.textSecondary),
-                    SizedBox(height: 16),
+                    Icon(Icons.bookmark_border, size: 64, color: cs.onSurface.withValues(alpha: 0.4)),
+                    const SizedBox(height: 16),
                     Text(
-                      'No saved articles yet.\nBookmark articles to read them later.',
+                      l10n.noSavedArticles,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 16),
+                      style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6), fontSize: 16),
                     ),
                   ],
                 ),

@@ -9,6 +9,7 @@ import 'package:newsly/features/articles/presentation/widgets/article_tile.dart'
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/injection_container.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 
 class MyFirestoreArticlesScreen extends StatelessWidget {
   const MyFirestoreArticlesScreen({super.key});
@@ -16,12 +17,10 @@ class MyFirestoreArticlesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
-    final authorId =
-        authState is AuthAuthenticated ? authState.user.id : '';
+    final authorId = authState is AuthAuthenticated ? authState.user.id : '';
 
     return BlocProvider(
-      create: (_) =>
-          sl<RemoteArticleBloc>()..add(GetMyArticlesEvent(authorId)),
+      create: (_) => sl<RemoteArticleBloc>()..add(GetMyArticlesEvent(authorId)),
       child: _MyFirestoreArticlesView(authorId: authorId),
     );
   }
@@ -33,8 +32,11 @@ class _MyFirestoreArticlesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('My Articles')),
+      appBar: AppBar(title: Text(l10n.myArticlesTitle)),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.accent,
         onPressed: () async {
@@ -53,26 +55,25 @@ class _MyFirestoreArticlesView extends StatelessWidget {
 
           if (state is RemoteArticleError) {
             return Center(
-              child: Text(state.message,
-                  style:
-                      const TextStyle(color: AppTheme.textSecondary)),
+              child: Text(
+                state.message,
+                style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6)),
+              ),
             );
           }
 
           if (state is RemoteArticlesLoaded) {
             if (state.articles.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.article_outlined,
-                        size: 64, color: AppTheme.textSecondary),
-                    SizedBox(height: 16),
+                    Icon(Icons.article_outlined, size: 64, color: cs.onSurface.withValues(alpha: 0.4)),
+                    const SizedBox(height: 16),
                     Text(
-                      "You haven't written any articles yet.\nTap + to get started.",
+                      l10n.noMyArticles,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 16),
+                      style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6), fontSize: 16),
                     ),
                   ],
                 ),
@@ -96,8 +97,7 @@ class _MyFirestoreArticlesView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit_outlined,
-                            color: AppTheme.textSecondary),
+                        icon: Icon(Icons.edit_outlined, color: cs.onSurface.withValues(alpha: 0.6)),
                         onPressed: () async {
                           await Navigator.pushNamed(
                             context,
@@ -105,17 +105,13 @@ class _MyFirestoreArticlesView extends StatelessWidget {
                             arguments: article,
                           );
                           if (context.mounted) {
-                            context
-                                .read<RemoteArticleBloc>()
-                                .add(GetMyArticlesEvent(authorId));
+                            context.read<RemoteArticleBloc>().add(GetMyArticlesEvent(authorId));
                           }
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: AppTheme.accent),
-                        onPressed: () => _confirmDelete(context, article.id,
-                            article.thumbnailPath),
+                        icon: const Icon(Icons.delete_outline, color: AppTheme.accent),
+                        onPressed: () => _confirmDelete(context, article.id, article.thumbnailPath, l10n),
                       ),
                     ],
                   ),
@@ -134,22 +130,21 @@ class _MyFirestoreArticlesView extends StatelessWidget {
     BuildContext context,
     String articleId,
     String thumbnailPath,
+    AppLocalizations l10n,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete Article'),
-        content:
-            const Text('This action cannot be undone. Are you sure?'),
+        title: Text(l10n.deleteArticle),
+        content: Text(l10n.deleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete',
-                style: TextStyle(color: AppTheme.accent)),
+            child: Text(l10n.delete, style: const TextStyle(color: AppTheme.accent)),
           ),
         ],
       ),

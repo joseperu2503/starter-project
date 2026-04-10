@@ -11,6 +11,7 @@ import 'package:newsly/features/articles/presentation/bloc/remote/remote_article
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/injection_container.dart';
+import 'package:newsly/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadArticleScreen extends StatelessWidget {
@@ -77,20 +78,18 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
   }
 
   void _submit(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (_thumbnail == null && !_isEditing) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a thumbnail image')),
+        SnackBar(content: Text(l10n.thumbnailRequired)),
       );
       return;
     }
 
     final authState = context.read<AuthBloc>().state;
-    final authorId =
-        authState is AuthAuthenticated ? authState.user.id : '';
-    final authorName =
-        authState is AuthAuthenticated ? authState.user.displayName : '';
-
+    final authorId = authState is AuthAuthenticated ? authState.user.id : '';
+    final authorName = authState is AuthAuthenticated ? authState.user.displayName : '';
     final now = DateTime.now();
 
     if (_isEditing) {
@@ -139,13 +138,13 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = context.watch<AuthBloc>().state;
-    final authorName =
-        authState is AuthAuthenticated ? authState.user.displayName : '';
+    final authorName = authState is AuthAuthenticated ? authState.user.displayName : '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Article' : 'Write Article'),
+        title: Text(_isEditing ? l10n.editArticle : l10n.writeArticleTitle),
       ),
       body: BlocListener<RemoteArticleBloc, RemoteArticleState>(
         listener: (context, state) {
@@ -153,9 +152,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(_isEditing
-                    ? 'Article updated successfully'
-                    : 'Article published successfully'),
+                content: Text(_isEditing ? l10n.articleUpdated : l10n.articlePublished),
               ),
             );
           } else if (state is RemoteArticleError) {
@@ -174,7 +171,6 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Thumbnail picker
                     Builder(builder: (context) {
                       final cs = Theme.of(context).colorScheme;
                       return GestureDetector(
@@ -184,8 +180,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                           decoration: BoxDecoration(
                             color: cs.surface,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: cs.onSurface.withValues(alpha: 0.15)),
+                            border: Border.all(color: cs.onSurface.withValues(alpha: 0.15)),
                             image: _thumbnail != null
                                 ? DecorationImage(
                                     image: FileImage(_thumbnail!),
@@ -199,14 +194,11 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                                   children: [
                                     Icon(Icons.add_photo_alternate_outlined,
                                         size: 48,
-                                        color: cs.onSurface
-                                            .withValues(alpha: 0.4)),
+                                        color: cs.onSurface.withValues(alpha: 0.4)),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Tap to select thumbnail',
-                                      style: TextStyle(
-                                          color: cs.onSurface
-                                              .withValues(alpha: 0.5)),
+                                      l10n.selectThumbnail,
+                                      style: TextStyle(color: cs.onSurface.withValues(alpha: 0.5)),
                                     ),
                                   ],
                                 )
@@ -215,31 +207,22 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                       );
                     }),
                     const SizedBox(height: 20),
-                    // Author display (read-only)
                     Builder(builder: (context) {
                       final cs = Theme.of(context).colorScheme;
                       return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
                           color: cs.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: cs.onSurface.withValues(alpha: 0.15)),
+                          border: Border.all(color: cs.onSurface.withValues(alpha: 0.15)),
                         ),
                         child: Row(
                           children: [
                             Icon(Icons.person_outline,
-                                size: 18,
-                                color: cs.onSurface.withValues(alpha: 0.5)),
+                                size: 18, color: cs.onSurface.withValues(alpha: 0.5)),
                             const SizedBox(width: 8),
-                            Text(
-                              authorName,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: cs.onSurface,
-                              ),
-                            ),
+                            Text(authorName,
+                                style: TextStyle(fontSize: 15, color: cs.onSurface)),
                           ],
                         ),
                       );
@@ -247,37 +230,34 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _titleController,
-                      label: 'Title',
-                      validator: (v) =>
-                          v!.trim().isEmpty ? 'Title is required' : null,
+                      label: l10n.titleLabel,
+                      validator: (v) => v!.trim().isEmpty ? l10n.titleRequired : null,
                     ),
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _descriptionController,
-                      label: 'Short description',
+                      label: l10n.descriptionLabel,
                       maxLines: 2,
-                      validator: (v) =>
-                          v!.trim().isEmpty ? 'Description is required' : null,
+                      validator: (v) => v!.trim().isEmpty ? l10n.descriptionRequired : null,
                     ),
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _contentController,
-                      label: 'Content',
+                      label: l10n.contentLabel,
                       maxLines: 8,
-                      validator: (v) =>
-                          v!.trim().isEmpty ? 'Content is required' : null,
+                      validator: (v) => v!.trim().isEmpty ? l10n.contentRequired : null,
                     ),
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _categoryController,
-                      label: 'Category (optional)',
+                      label: l10n.categoryLabel,
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
                       value: _isPublished,
                       onChanged: (v) => setState(() => _isPublished = v),
-                      title: const Text('Publish immediately'),
-                      subtitle: const Text('Turn off to save as draft'),
+                      title: Text(l10n.publishImmediately),
+                      subtitle: Text(l10n.saveDraft),
                       activeThumbColor: AppTheme.accent,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -293,9 +273,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                                 color: Colors.white,
                               ),
                             )
-                          : Text(_isEditing
-                              ? 'Update Article'
-                              : 'Publish Article'),
+                          : Text(_isEditing ? l10n.updateArticle : l10n.publishArticle),
                     ),
                     const SizedBox(height: 40),
                   ],
