@@ -8,6 +8,8 @@ import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_state.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/injection_container.dart';
 import 'package:uuid/uuid.dart';
 
@@ -112,7 +114,8 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
             ),
           );
     } else {
-      const authorId = 'anonymous';
+      final authState = context.read<AuthBloc>().state;
+      final authorId = authState is AuthAuthenticated ? authState.user.id : '';
       final id = const Uuid().v4();
       final article = ArticleEntity(
         id: id,

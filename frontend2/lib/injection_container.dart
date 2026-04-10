@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 
@@ -16,6 +17,13 @@ import 'package:newsly/features/articles/domain/use_cases/update_article.dart';
 import 'package:newsly/features/articles/domain/use_cases/upload_article.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_bloc.dart';
+import 'package:newsly/features/auth/data/data_sources/firebase_auth_data_source.dart';
+import 'package:newsly/features/auth/data/repository/auth_repository_impl.dart';
+import 'package:newsly/features/auth/domain/repository/auth_repository.dart';
+import 'package:newsly/features/auth/domain/use_cases/register.dart';
+import 'package:newsly/features/auth/domain/use_cases/sign_in.dart';
+import 'package:newsly/features/auth/domain/use_cases/sign_out.dart';
+import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -23,19 +31,33 @@ Future<void> initDependencies() async {
   // ── External ────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => AppDatabase());
 
-  // ── Data Sources ────────────────────────────────────────────────────────────
-  sl.registerLazySingleton(
-    () => FirestoreArticleDataSource(sl(), sl()),
+  // ── Auth ────────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => FirebaseAuthDataSource(sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => SignIn(sl()));
+  sl.registerLazySingleton(() => Register(sl()));
+  sl.registerLazySingleton(() => SignOut(sl()));
+  sl.registerFactory(
+    () => AuthBloc(
+      signIn: sl(),
+      register: sl(),
+      signOut: sl(),
+      authRepository: sl(),
+    ),
   );
 
-  // ── Repository ──────────────────────────────────────────────────────────────
+  // ── Articles Data Sources ───────────────────────────────────────────────────
+  sl.registerLazySingleton(() => FirestoreArticleDataSource(sl(), sl()));
+
+  // ── Articles Repository ─────────────────────────────────────────────────────
   sl.registerLazySingleton<ArticleRepository>(
     () => ArticleRepositoryImpl(sl(), sl()),
   );
 
-  // ── Use Cases ───────────────────────────────────────────────────────────────
+  // ── Articles Use Cases ──────────────────────────────────────────────────────
   sl.registerLazySingleton(() => GetPublishedArticles(sl()));
   sl.registerLazySingleton(() => GetMyArticles(sl()));
   sl.registerLazySingleton(() => UploadArticle(sl()));
@@ -45,7 +67,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => SaveArticle(sl()));
   sl.registerLazySingleton(() => RemoveSavedArticle(sl()));
 
-  // ── BLoCs ───────────────────────────────────────────────────────────────────
+  // ── Articles BLoCs ──────────────────────────────────────────────────────────
   sl.registerFactory(
     () => RemoteArticleBloc(
       getPublishedArticles: sl(),
@@ -55,7 +77,6 @@ Future<void> initDependencies() async {
       deleteArticle: sl(),
     ),
   );
-
   sl.registerFactory(
     () => LocalArticleBloc(
       getSavedArticles: sl(),
