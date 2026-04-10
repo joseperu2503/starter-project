@@ -553,6 +553,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select your preferred language'**
   String get selectLanguage;
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Newsly'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your go-to source for the latest stories'**
+  String get welcomeSubtitle;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as Guest'**
+  String get continueAsGuest;
+
+  /// No description provided for @guestSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get guestSettings;
+
+  /// No description provided for @signInToInteract.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to bookmark articles and write your own stories'**
+  String get signInToInteract;
+
+  /// No description provided for @guestBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get guestBannerAction;
 }
 
 class _AppLocalizationsDelegate

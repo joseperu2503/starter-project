@@ -9,7 +9,7 @@ import 'package:newsly/features/articles/presentation/screens/home_screen.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
-import 'package:newsly/features/auth/presentation/screens/login_screen.dart';
+import 'package:newsly/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:newsly/firebase_options.dart';
 import 'package:newsly/injection_container.dart';
 import 'package:newsly/l10n/app_localizations.dart';
@@ -38,14 +38,14 @@ class App extends StatelessWidget {
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthAuthenticated) {
+          if (state is AuthAuthenticated || state is AuthGuest) {
             _navigatorKey.currentState?.pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const HomeScreen()),
               (_) => false,
             );
           } else if (state is AuthUnauthenticated) {
             _navigatorKey.currentState?.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              MaterialPageRoute(builder: (_) => const WelcomeScreen()),
               (_) => false,
             );
           }
@@ -65,7 +65,7 @@ class App extends StatelessWidget {
                   localizationsDelegates: AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
                   onGenerateRoute: AppRoutes.onGenerateRoute,
-                  home: const LoginScreen(),
+                  home: const WelcomeScreen(),
                 );
               },
             );

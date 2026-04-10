@@ -26,3 +26,7 @@ class SignOutEvent extends AuthEvent {
 class CheckAuthEvent extends AuthEvent {
   const CheckAuthEvent();
 }
+
+class ContinueAsGuestEvent extends AuthEvent {
+  const ContinueAsGuestEvent();
+}

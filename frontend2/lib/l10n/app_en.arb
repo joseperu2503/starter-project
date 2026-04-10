@@ -87,5 +87,12 @@
   "weakPassword": "New password is too weak",
   "somethingWentWrong": "Something went wrong",
 
-  "selectLanguage": "Select your preferred language"
+  "selectLanguage": "Select your preferred language",
+
+  "welcomeTitle": "Welcome to Newsly",
+  "welcomeSubtitle": "Your go-to source for the latest stories",
+  "continueAsGuest": "Continue as Guest",
+  "guestSettings": "Settings",
+  "signInToInteract": "Sign in to bookmark articles and write your own stories",
+  "guestBannerAction": "Sign In"
 }

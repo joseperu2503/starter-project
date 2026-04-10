@@ -27,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInEvent>(_onSignIn);
     on<RegisterEvent>(_onRegister);
     on<SignOutEvent>(_onSignOut);
+    on<ContinueAsGuestEvent>((_, emit) => emit(const AuthGuest()));
   }
 
   void _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) {

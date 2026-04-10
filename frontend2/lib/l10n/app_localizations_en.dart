@@ -238,4 +238,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectLanguage => 'Select your preferred language';
+
+  @override
+  String get welcomeTitle => 'Welcome to Newsly';
+
+  @override
+  String get welcomeSubtitle => 'Your go-to source for the latest stories';
+
+  @override
+  String get continueAsGuest => 'Continue as Guest';
+
+  @override
+  String get guestSettings => 'Settings';
+
+  @override
+  String get signInToInteract =>
+      'Sign in to bookmark articles and write your own stories';
+
+  @override
+  String get guestBannerAction => 'Sign In';
 }

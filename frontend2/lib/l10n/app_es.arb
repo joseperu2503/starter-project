@@ -87,5 +87,12 @@
   "weakPassword": "La nueva contraseña es muy débil",
   "somethingWentWrong": "Algo salió mal",
 
-  "selectLanguage": "Selecciona tu idioma preferido"
+  "selectLanguage": "Selecciona tu idioma preferido",
+
+  "welcomeTitle": "Bienvenido a Newsly",
+  "welcomeSubtitle": "Tu fuente principal de las últimas noticias",
+  "continueAsGuest": "Continuar como invitado",
+  "guestSettings": "Ajustes",
+  "signInToInteract": "Inicia sesión para guardar artículos y escribir los tuyos",
+  "guestBannerAction": "Iniciar sesión"
 }
