@@ -37,6 +37,7 @@ class SocialRemoteDataSource {
 
   /// Check if [followerId] follows [followingId].
   Future<bool> isFollowing(String followerId, String followingId) async {
+    if (followerId.isEmpty) return false;
     final id = '${followerId}_$followingId';
     final doc = await _firestore.collection('follows').doc(id).get();
     return doc.exists;

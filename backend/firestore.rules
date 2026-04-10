@@ -44,8 +44,8 @@ service cloud.firestore {
     // ─── Follows ─────────────────────────────────────────────────────────────
     match /follows/{followId} {
 
-      // Authenticated users can read follows
-      allow read: if request.auth != null;
+      // Anyone can read follows (needed for public follower counts)
+      allow read: if true;
 
       // A user can only create a follow where they are the follower
       allow create: if request.auth != null
