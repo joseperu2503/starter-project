@@ -36,10 +36,10 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 l10n.welcomeTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: AppTheme.primary,
+                  color: cs.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -82,8 +82,11 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
-                  side: const BorderSide(color: AppTheme.primary),
-                  foregroundColor: AppTheme.primary,
+                  side: BorderSide(color: cs.onSurface.withValues(alpha: 0.4)),
+                  foregroundColor: cs.onSurface,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(l10n.register),
               ),
@@ -94,6 +97,9 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
                   foregroundColor: cs.onSurface.withValues(alpha: 0.6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Text(l10n.continueAsGuest),
               ),
