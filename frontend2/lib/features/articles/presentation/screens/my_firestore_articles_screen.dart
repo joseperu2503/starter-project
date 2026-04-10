@@ -47,7 +47,13 @@ class _MyFirestoreArticlesView extends StatelessWidget {
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: BlocBuilder<RemoteArticleBloc, RemoteArticleState>(
+      body: BlocListener<RemoteArticleBloc, RemoteArticleState>(
+        listener: (context, state) {
+          if (state is RemoteArticleActionSuccess) {
+            context.read<RemoteArticleBloc>().add(GetMyArticlesEvent(authorId));
+          }
+        },
+        child: BlocBuilder<RemoteArticleBloc, RemoteArticleState>(
         builder: (context, state) {
           if (state is RemoteArticleLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -122,9 +128,12 @@ class _MyFirestoreArticlesView extends StatelessWidget {
 
           return const SizedBox.shrink();
         },
+        ),
       ),
     );
   }
+
+
 
   Future<void> _confirmDelete(
     BuildContext context,
