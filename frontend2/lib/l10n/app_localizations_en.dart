@@ -290,4 +290,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToComment => 'Sign in to like and comment';
+
+  @override
+  String get signInWithGoogle => 'Sign in with Google';
+
+  @override
+  String get orDivider => 'or';
 }

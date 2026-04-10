@@ -106,5 +106,8 @@
   "noComments": "No comments yet. Be the first!",
   "deleteComment": "Delete comment",
   "deleteCommentConfirm": "Delete this comment?",
-  "signInToComment": "Sign in to like and comment"
+  "signInToComment": "Sign in to like and comment",
+
+  "signInWithGoogle": "Sign in with Google",
+  "orDivider": "or"
 }

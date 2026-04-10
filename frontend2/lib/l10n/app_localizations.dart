@@ -655,6 +655,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in to like and comment'**
   String get signInToComment;
+
+  /// No description provided for @signInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogle;
+
+  /// No description provided for @orDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orDivider;
 }
 
 class _AppLocalizationsDelegate

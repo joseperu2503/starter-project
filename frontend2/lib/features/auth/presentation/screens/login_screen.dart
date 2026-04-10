@@ -5,6 +5,7 @@ import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/auth/presentation/screens/register_screen.dart';
+import 'package:newsly/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:newsly/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -125,6 +126,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                     ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: cs.onSurface.withValues(alpha: 0.2))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            l10n.orDivider,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: cs.onSurface.withValues(alpha: 0.4),
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: cs.onSurface.withValues(alpha: 0.2))),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const GoogleSignInButton(),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

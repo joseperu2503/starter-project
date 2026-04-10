@@ -32,6 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterEvent>(_onRegister);
     on<SignOutEvent>(_onSignOut);
     on<ContinueAsGuestEvent>((_, emit) => emit(const AuthGuest()));
+    on<SignInWithGoogleEvent>(_onSignInWithGoogle);
   }
 
   void _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) {
@@ -71,6 +72,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _socialDataSource.saveUserToken(user.id, user.displayName);
     } catch (e) {
       emit(AuthError(_parseError(e)));
+    }
+  }
+
+  Future<void> _onSignInWithGoogle(
+      SignInWithGoogleEvent event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
+    try {
+      final user = await _authRepository.signInWithGoogle();
+      emit(AuthAuthenticated(user));
+      _socialDataSource.saveUserToken(user.id, user.displayName);
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('cancelled')) {
+        emit(const AuthUnauthenticated());
+      } else {
+        emit(AuthError(_parseError(e)));
+      }
     }
   }
 

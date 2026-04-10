@@ -296,4 +296,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get signInToComment => 'Inicia sesión para dar me gusta y comentar';
+
+  @override
+  String get signInWithGoogle => 'Iniciar sesión con Google';
+
+  @override
+  String get orDivider => 'o';
 }

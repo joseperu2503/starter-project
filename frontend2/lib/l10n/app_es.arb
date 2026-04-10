@@ -106,5 +106,8 @@
   "noComments": "Sin comentarios aún. ¡Sé el primero!",
   "deleteComment": "Eliminar comentario",
   "deleteCommentConfirm": "¿Eliminar este comentario?",
-  "signInToComment": "Inicia sesión para dar me gusta y comentar"
+  "signInToComment": "Inicia sesión para dar me gusta y comentar",
+
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "orDivider": "o"
 }

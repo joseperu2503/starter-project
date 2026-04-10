@@ -30,3 +30,7 @@ class CheckAuthEvent extends AuthEvent {
 class ContinueAsGuestEvent extends AuthEvent {
   const ContinueAsGuestEvent();
 }
+
+class SignInWithGoogleEvent extends AuthEvent {
+  const SignInWithGoogleEvent();
+}
