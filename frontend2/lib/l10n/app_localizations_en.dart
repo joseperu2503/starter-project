@@ -296,4 +296,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orDivider => 'or';
+
+  @override
+  String get searchHint => 'Search articles...';
+
+  @override
+  String get noSearchResults => 'No articles match your search.';
+
+  @override
+  String get views => 'views';
 }

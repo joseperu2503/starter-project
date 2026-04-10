@@ -302,4 +302,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get orDivider => 'o';
+
+  @override
+  String get searchHint => 'Buscar artículos...';
+
+  @override
+  String get noSearchResults => 'Ningún artículo coincide con tu búsqueda.';
+
+  @override
+  String get views => 'vistas';
 }

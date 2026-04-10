@@ -48,6 +48,35 @@ class FirestoreInteractionDataSource {
         .delete();
   }
 
+  // ── Views ──────────────────────────────────────────────────────────────────
+
+  Future<int> getViewCount(String articleId) async {
+    final snap = await _firestore
+        .collection('articles')
+        .doc(articleId)
+        .collection('views')
+        .count()
+        .get();
+    return snap.count ?? 0;
+  }
+
+  /// Registers a unique view. Skips if the user is the author or already viewed.
+  Future<void> registerView({
+    required String articleId,
+    required String userId,
+    required String authorId,
+  }) async {
+    if (userId.isEmpty || userId == authorId) return;
+    final ref = _firestore
+        .collection('articles')
+        .doc(articleId)
+        .collection('views')
+        .doc(userId);
+    final doc = await ref.get();
+    if (doc.exists) return;
+    await ref.set({'viewedAt': FieldValue.serverTimestamp()});
+  }
+
   // ── Comments ───────────────────────────────────────────────────────────────
 
   Future<List<CommentEntity>> getComments(String articleId) async {

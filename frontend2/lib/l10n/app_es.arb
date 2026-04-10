@@ -109,5 +109,10 @@
   "signInToComment": "Inicia sesión para dar me gusta y comentar",
 
   "signInWithGoogle": "Iniciar sesión con Google",
-  "orDivider": "o"
+  "orDivider": "o",
+
+  "searchHint": "Buscar artículos...",
+  "noSearchResults": "Ningún artículo coincide con tu búsqueda.",
+
+  "views": "vistas"
 }

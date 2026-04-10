@@ -109,5 +109,10 @@
   "signInToComment": "Sign in to like and comment",
 
   "signInWithGoogle": "Sign in with Google",
-  "orDivider": "or"
+  "orDivider": "or",
+
+  "searchHint": "Search articles...",
+  "noSearchResults": "No articles match your search.",
+
+  "views": "views"
 }

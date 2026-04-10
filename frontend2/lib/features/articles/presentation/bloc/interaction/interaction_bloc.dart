@@ -11,7 +11,12 @@ abstract class InteractionEvent {
 class LoadInteractionsEvent extends InteractionEvent {
   final String articleId;
   final String userId;
-  const LoadInteractionsEvent({required this.articleId, required this.userId});
+  final String authorId;
+  const LoadInteractionsEvent({
+    required this.articleId,
+    required this.userId,
+    required this.authorId,
+  });
 }
 
 class ToggleLikeEvent extends InteractionEvent {
@@ -44,6 +49,7 @@ class DeleteCommentEvent extends InteractionEvent {
 class InteractionState {
   final bool isLiked;
   final int likesCount;
+  final int viewCount;
   final List<CommentEntity> comments;
   final bool isLoading;
   final bool isSendingComment;
@@ -51,6 +57,7 @@ class InteractionState {
   const InteractionState({
     this.isLiked = false,
     this.likesCount = 0,
+    this.viewCount = 0,
     this.comments = const [],
     this.isLoading = false,
     this.isSendingComment = false,
@@ -59,6 +66,7 @@ class InteractionState {
   InteractionState copyWith({
     bool? isLiked,
     int? likesCount,
+    int? viewCount,
     List<CommentEntity>? comments,
     bool? isLoading,
     bool? isSendingComment,
@@ -66,6 +74,7 @@ class InteractionState {
     return InteractionState(
       isLiked: isLiked ?? this.isLiked,
       likesCount: likesCount ?? this.likesCount,
+      viewCount: viewCount ?? this.viewCount,
       comments: comments ?? this.comments,
       isLoading: isLoading ?? this.isLoading,
       isSendingComment: isSendingComment ?? this.isSendingComment,
@@ -88,15 +97,22 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
   Future<void> _onLoad(
       LoadInteractionsEvent event, Emitter<InteractionState> emit) async {
     emit(state.copyWith(isLoading: true));
+    // Register view and load all data in parallel
     final results = await Future.wait([
       _dataSource.isLiked(event.articleId, event.userId),
       _dataSource.getLikesCount(event.articleId),
       _dataSource.getComments(event.articleId),
+      _dataSource.registerView(
+        articleId: event.articleId,
+        userId: event.userId,
+        authorId: event.authorId,
+      ).then((_) => _dataSource.getViewCount(event.articleId)),
     ]);
     emit(state.copyWith(
       isLiked: results[0] as bool,
       likesCount: results[1] as int,
       comments: results[2] as List<CommentEntity>,
+      viewCount: results[3] as int,
       isLoading: false,
     ));
   }

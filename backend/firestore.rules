@@ -65,6 +65,19 @@ service cloud.firestore {
                     && resource.data.authorId == request.auth.uid;
     }
 
+    // ─── Views ───────────────────────────────────────────────────────────────
+    match /articles/{articleId}/views/{userId} {
+      // Anyone can read view counts
+      allow read: if true;
+
+      // Only authenticated users can register their own view
+      allow create: if request.auth != null
+                   && request.auth.uid == userId;
+
+      // No updates or deletes — views are immutable
+      allow update, delete: if false;
+    }
+
     // ─── Categories ──────────────────────────────────────────────────────────
     match /categories/{categoryId} {
       // Anyone can read categories (used in article form and home filter)

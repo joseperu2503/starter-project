@@ -38,6 +38,7 @@ class ArticleDetailScreen extends StatelessWidget {
               ..add(LoadInteractionsEvent(
                 articleId: article.id,
                 userId: userId,
+                authorId: article.authorId,
               ));
           },
         ),
@@ -257,6 +258,18 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                           const SizedBox(width: 6),
                           Text(
                             '${state.comments.length} ${l10n.comments}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: cs.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Icon(Icons.visibility_outlined,
+                              size: 20,
+                              color: cs.onSurface.withValues(alpha: 0.5)),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${state.viewCount} ${l10n.views}',
                             style: TextStyle(
                               fontSize: 13,
                               color: cs.onSurface.withValues(alpha: 0.6),

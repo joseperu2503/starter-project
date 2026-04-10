@@ -37,8 +37,22 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _HomeView extends StatelessWidget {
+class _HomeView extends StatefulWidget {
   const _HomeView();
+
+  @override
+  State<_HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<_HomeView> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,58 +63,84 @@ class _HomeView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.home),
-        actions: isGuest
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.settings_outlined),
-                  tooltip: l10n.guestSettings,
-                  onPressed: () => _showGuestSettings(context, l10n),
-                ),
-              ]
-            : [
-                IconButton(
-                  icon: const Icon(Icons.bookmark_outline),
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.myArticles),
-                  tooltip: l10n.savedArticles,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.newspaper_outlined),
-                  onPressed: () async {
-                    await Navigator.pushNamed(context, AppRoutes.myFirestoreArticles);
-                    if (context.mounted) {
-                      context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
-                    }
-                  },
-                  tooltip: l10n.myArticles,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: () async {
-                    await Navigator.pushNamed(context, AppRoutes.uploadArticle);
-                    if (context.mounted) {
-                      context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
-                    }
-                  },
-                  tooltip: l10n.writeArticle,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.account_circle_outlined),
-                  tooltip: l10n.profile,
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<AuthBloc>(),
-                        child: const ProfileScreen(),
-                      ),
-                    ),
+        actions: [
+          if (isGuest)
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              tooltip: l10n.guestSettings,
+              onPressed: () => _showGuestSettings(context, l10n),
+            )
+          else ...[
+            IconButton(
+              icon: const Icon(Icons.bookmark_outline),
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.myArticles),
+              tooltip: l10n.savedArticles,
+            ),
+            IconButton(
+              icon: const Icon(Icons.newspaper_outlined),
+              onPressed: () async {
+                await Navigator.pushNamed(context, AppRoutes.myFirestoreArticles);
+                if (context.mounted) {
+                  context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
+                }
+              },
+              tooltip: l10n.myArticles,
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () async {
+                await Navigator.pushNamed(context, AppRoutes.uploadArticle);
+                if (context.mounted) {
+                  context.read<RemoteArticleBloc>().add(const GetPublishedArticlesEvent());
+                }
+              },
+              tooltip: l10n.writeArticle,
+            ),
+            IconButton(
+              icon: const Icon(Icons.account_circle_outlined),
+              tooltip: l10n.profile,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<AuthBloc>(),
+                    child: const ProfileScreen(),
                   ),
                 ),
-              ],
+              ),
+            ),
+          ],
+        ],
       ),
       body: Column(
         children: [
           if (isGuest) _GuestBanner(l10n: l10n),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: l10n.searchHint,
+                prefixIcon: const Icon(Icons.search_outlined),
+                suffixIcon: _query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => setState(() {
+                          _query = '';
+                          _searchController.clear();
+                        }),
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onChanged: (v) => setState(() => _query = v.toLowerCase()),
+            ),
+          ),
           Expanded(
             child: BlocBuilder<RemoteArticleBloc, RemoteArticleState>(
               builder: (context, state) {
@@ -133,12 +173,21 @@ class _HomeView extends StatelessWidget {
                 }
 
                 if (state is RemoteArticlesLoaded) {
-                  if (state.articles.isEmpty) {
+                  final articles = _query.isEmpty
+                      ? state.articles
+                      : state.articles.where((a) {
+                          return a.title.toLowerCase().contains(_query) ||
+                              (a.category?.toLowerCase().contains(_query) ?? false) ||
+                              a.author.toLowerCase().contains(_query);
+                        }).toList();
+
+                  if (articles.isEmpty) {
                     return Center(
                       child: Text(
-                        l10n.noArticlesYet,
+                        _query.isEmpty ? l10n.noArticlesYet : l10n.noSearchResults,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6), fontSize: 16),
+                        style: TextStyle(
+                            color: cs.onSurface.withValues(alpha: 0.6), fontSize: 16),
                       ),
                     );
                   }
@@ -150,9 +199,9 @@ class _HomeView extends StatelessWidget {
                           .add(const GetPublishedArticlesEvent()),
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: state.articles.length,
+                        itemCount: articles.length,
                         itemBuilder: (context, index) {
-                          final article = state.articles[index];
+                          final article = articles[index];
                           return ArticleTile(
                             article: article,
                             onTap: () => Navigator.pushNamed(
@@ -178,9 +227,9 @@ class _HomeView extends StatelessWidget {
                             .add(const GetPublishedArticlesEvent()),
                         child: ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: state.articles.length,
+                          itemCount: articles.length,
                           itemBuilder: (context, index) {
-                            final article = state.articles[index];
+                            final article = articles[index];
                             return ArticleTile(
                               article: article,
                               isSaved: savedIds.contains(article.id),
