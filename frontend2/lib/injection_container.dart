@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
 import 'package:newsly/core/services/notification_service.dart';
+import 'package:newsly/features/articles/data/data_sources/remote/firestore_interaction_data_source.dart';
+import 'package:newsly/features/articles/presentation/bloc/interaction/interaction_bloc.dart';
 import 'package:newsly/features/social/data/social_remote_data_source.dart';
 import 'package:newsly/features/social/presentation/bloc/social_bloc.dart';
 
@@ -56,6 +58,10 @@ Future<void> initDependencies() async {
   // ── Social ──────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => SocialRemoteDataSource(sl(), sl()));
   sl.registerFactory(() => SocialBloc(sl()));
+
+  // ── Interactions (likes & comments) ─────────────────────────────────────────
+  sl.registerLazySingleton(() => FirestoreInteractionDataSource(sl()));
+  sl.registerFactory(() => InteractionBloc(sl()));
 
   // ── Auth ────────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => FirebaseAuthDataSource(sl()));

@@ -272,4 +272,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get guestBannerAction => 'Iniciar sesión';
+
+  @override
+  String get likes => 'me gusta';
+
+  @override
+  String get comments => 'Comentarios';
+
+  @override
+  String get addCommentHint => 'Agrega un comentario...';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get noComments => 'Sin comentarios aún. ¡Sé el primero!';
+
+  @override
+  String get deleteComment => 'Eliminar comentario';
+
+  @override
+  String get deleteCommentConfirm => '¿Eliminar este comentario?';
+
+  @override
+  String get signInToComment => 'Inicia sesión para dar me gusta y comentar';
 }

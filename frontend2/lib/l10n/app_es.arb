@@ -97,5 +97,14 @@
   "continueAsGuest": "Continuar como invitado",
   "guestSettings": "Ajustes",
   "signInToInteract": "Inicia sesión para guardar artículos y escribir los tuyos",
-  "guestBannerAction": "Iniciar sesión"
+  "guestBannerAction": "Iniciar sesión",
+
+  "likes": "me gusta",
+  "comments": "Comentarios",
+  "addCommentHint": "Agrega un comentario...",
+  "send": "Enviar",
+  "noComments": "Sin comentarios aún. ¡Sé el primero!",
+  "deleteComment": "Eliminar comentario",
+  "deleteCommentConfirm": "¿Eliminar este comentario?",
+  "signInToComment": "Inicia sesión para dar me gusta y comentar"
 }

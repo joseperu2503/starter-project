@@ -266,4 +266,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestBannerAction => 'Sign In';
+
+  @override
+  String get likes => 'likes';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String get addCommentHint => 'Add a comment...';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get noComments => 'No comments yet. Be the first!';
+
+  @override
+  String get deleteComment => 'Delete comment';
+
+  @override
+  String get deleteCommentConfirm => 'Delete this comment?';
+
+  @override
+  String get signInToComment => 'Sign in to like and comment';
 }

@@ -29,10 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<AuthBloc>().add(SignInEvent(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ));
+    context.read<AuthBloc>().add(
+      SignInEvent(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -44,9 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         child: SafeArea(
@@ -58,19 +60,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Newsly',
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.primary,
+                        color: cs.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.signInSubtitle,
-                      style: TextStyle(fontSize: 15, color: cs.onSurface.withValues(alpha: 0.6)),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
@@ -78,7 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(labelText: l10n.emailLabel),
-                      validator: (v) => v!.trim().isEmpty ? l10n.emailRequired : null,
+                      validator: (v) =>
+                          v!.trim().isEmpty ? l10n.emailRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -87,13 +93,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: l10n.passwordLabel,
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
-                      validator: (v) => v!.isEmpty ? l10n.passwordRequired : null,
+                      validator: (v) =>
+                          v!.isEmpty ? l10n.passwordRequired : null,
                     ),
                     const SizedBox(height: 28),
                     BlocBuilder<AuthBloc, AuthState>(
@@ -105,7 +116,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
                                 )
                               : Text(l10n.signIn),
                         );
@@ -115,8 +129,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l10n.noAccount,
-                            style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6))),
+                        Text(
+                          l10n.noAccount,
+                          style: TextStyle(
+                            color: cs.onSurface.withValues(alpha: 0.6),
+                          ),
+                        ),
                         GestureDetector(
                           onTap: () => Navigator.push(
                             context,

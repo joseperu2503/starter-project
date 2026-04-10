@@ -97,5 +97,14 @@
   "continueAsGuest": "Continue as Guest",
   "guestSettings": "Settings",
   "signInToInteract": "Sign in to bookmark articles and write your own stories",
-  "guestBannerAction": "Sign In"
+  "guestBannerAction": "Sign In",
+
+  "likes": "likes",
+  "comments": "Comments",
+  "addCommentHint": "Add a comment...",
+  "send": "Send",
+  "noComments": "No comments yet. Be the first!",
+  "deleteComment": "Delete comment",
+  "deleteCommentConfirm": "Delete this comment?",
+  "signInToComment": "Sign in to like and comment"
 }
