@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:frontend2/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 
 class ArticleModel extends ArticleEntity {
   const ArticleModel({

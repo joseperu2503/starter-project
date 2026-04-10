@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend2/core/usecase/usecase.dart';
-import 'package:frontend2/features/articles/domain/use_cases/get_saved_articles.dart';
-import 'package:frontend2/features/articles/domain/use_cases/remove_saved_article.dart';
-import 'package:frontend2/features/articles/domain/use_cases/save_article.dart';
-import 'package:frontend2/features/articles/presentation/bloc/local/local_article_event.dart';
-import 'package:frontend2/features/articles/presentation/bloc/local/local_article_state.dart';
+import 'package:newsly/core/usecase/usecase.dart';
+import 'package:newsly/features/articles/domain/use_cases/get_saved_articles.dart';
+import 'package:newsly/features/articles/domain/use_cases/remove_saved_article.dart';
+import 'package:newsly/features/articles/domain/use_cases/save_article.dart';
+import 'package:newsly/features/articles/presentation/bloc/local/local_article_event.dart';
+import 'package:newsly/features/articles/presentation/bloc/local/local_article_state.dart';
 
 class LocalArticleBloc extends Bloc<LocalArticleEvent, LocalArticleState> {
   final GetSavedArticles _getSavedArticles;

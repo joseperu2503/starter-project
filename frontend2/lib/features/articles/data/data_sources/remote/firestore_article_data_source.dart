@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:frontend2/features/articles/data/models/article_model.dart';
-import 'package:frontend2/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/data/models/article_model.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 
 class FirestoreArticleDataSource {
   final FirebaseFirestore _firestore;

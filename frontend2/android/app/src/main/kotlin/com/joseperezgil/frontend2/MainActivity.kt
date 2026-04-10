@@ -1,4 +1,4 @@
-package com.example.frontend2
+package com.joseperezgil.newsly
 
 import io.flutter.embedding.android.FlutterActivity
 

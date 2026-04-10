@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:frontend2/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 
 abstract class ArticleRepository {
   // Firestore — remote

@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend2/core/usecase/usecase.dart';
-import 'package:frontend2/features/articles/domain/use_cases/delete_article.dart';
-import 'package:frontend2/features/articles/domain/use_cases/get_my_articles.dart';
-import 'package:frontend2/features/articles/domain/use_cases/get_published_articles.dart';
-import 'package:frontend2/features/articles/domain/use_cases/update_article.dart';
-import 'package:frontend2/features/articles/domain/use_cases/upload_article.dart';
-import 'package:frontend2/features/articles/presentation/bloc/remote/remote_article_event.dart';
-import 'package:frontend2/features/articles/presentation/bloc/remote/remote_article_state.dart';
+import 'package:newsly/core/usecase/usecase.dart';
+import 'package:newsly/features/articles/domain/use_cases/delete_article.dart';
+import 'package:newsly/features/articles/domain/use_cases/get_my_articles.dart';
+import 'package:newsly/features/articles/domain/use_cases/get_published_articles.dart';
+import 'package:newsly/features/articles/domain/use_cases/update_article.dart';
+import 'package:newsly/features/articles/domain/use_cases/upload_article.dart';
+import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_event.dart';
+import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_state.dart';
 
 class RemoteArticleBloc extends Bloc<RemoteArticleEvent, RemoteArticleState> {
   final GetPublishedArticles _getPublishedArticles;

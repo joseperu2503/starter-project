@@ -1,5 +1,5 @@
-import 'package:frontend2/core/usecase/usecase.dart';
-import 'package:frontend2/features/articles/domain/repository/article_repository.dart';
+import 'package:newsly/core/usecase/usecase.dart';
+import 'package:newsly/features/articles/domain/repository/article_repository.dart';
 
 class DeleteArticleParams {
   final String articleId;

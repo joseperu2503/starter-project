@@ -1,3 +1,3 @@
-# frontend2
+# newsly
 
 A new Flutter project.

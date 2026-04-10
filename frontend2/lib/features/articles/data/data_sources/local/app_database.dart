@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:frontend2/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 
 part 'app_database.g.dart';
 

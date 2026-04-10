@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:frontend2/features/articles/data/data_sources/local/app_database.dart';
-import 'package:frontend2/features/articles/data/data_sources/remote/firestore_article_data_source.dart';
-import 'package:frontend2/features/articles/domain/entities/article_entity.dart';
-import 'package:frontend2/features/articles/domain/repository/article_repository.dart';
+import 'package:newsly/features/articles/data/data_sources/local/app_database.dart';
+import 'package:newsly/features/articles/data/data_sources/remote/firestore_article_data_source.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/domain/repository/article_repository.dart';
 
 class ArticleRepositoryImpl implements ArticleRepository {
   final FirestoreArticleDataSource _remote;
