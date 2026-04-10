@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
 import 'package:newsly/core/services/notification_service.dart';
+import 'package:newsly/features/articles/data/data_sources/remote/firestore_category_data_source.dart';
 import 'package:newsly/features/articles/data/data_sources/remote/firestore_interaction_data_source.dart';
 import 'package:newsly/features/articles/presentation/bloc/interaction/interaction_bloc.dart';
 import 'package:newsly/features/social/data/social_remote_data_source.dart';
@@ -80,6 +81,7 @@ Future<void> initDependencies() async {
   );
 
   // ── Articles Data Sources ───────────────────────────────────────────────────
+  sl.registerLazySingleton(() => FirestoreCategoryDataSource(sl()));
   sl.registerLazySingleton(() => FirestoreArticleDataSource(sl(), sl()));
 
   // ── Articles Repository ─────────────────────────────────────────────────────

@@ -65,6 +65,15 @@ service cloud.firestore {
                     && resource.data.authorId == request.auth.uid;
     }
 
+    // ─── Categories ──────────────────────────────────────────────────────────
+    match /categories/{categoryId} {
+      // Anyone can read categories (used in article form and home filter)
+      allow read: if true;
+
+      // No client writes — managed via Firebase Console only
+      allow write: if false;
+    }
+
     // ─── Follows ─────────────────────────────────────────────────────────────
     match /follows/{followId} {
 

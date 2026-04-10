@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:newsly/config/theme/app_theme.dart';
+import 'package:newsly/features/articles/data/data_sources/remote/firestore_category_data_source.dart';
 import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_event.dart';
@@ -42,10 +43,13 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _contentController = TextEditingController();
-  final _categoryController = TextEditingController();
 
   File? _thumbnail;
   bool _isPublished = true;
+  String? _selectedCategory;
+  List<CategoryItem> _categories = [];
+  bool _categoriesLoading = true;
+
   bool get _isEditing => widget.article != null;
 
   @override
@@ -55,8 +59,18 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
       _titleController.text = widget.article!.title;
       _descriptionController.text = widget.article!.description;
       _contentController.text = widget.article!.content;
-      _categoryController.text = widget.article!.category ?? '';
+      _selectedCategory = widget.article!.category;
       _isPublished = widget.article!.isPublished;
+    }
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final cats = await sl<FirestoreCategoryDataSource>().getCategories();
+      if (mounted) setState(() { _categories = cats; _categoriesLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _categoriesLoading = false);
     }
   }
 
@@ -65,7 +79,6 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
     _titleController.dispose();
     _descriptionController.dispose();
     _contentController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 
@@ -102,9 +115,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
         content: _contentController.text.trim(),
         thumbnailPath: widget.article!.thumbnailPath,
         thumbnailURL: widget.article!.thumbnailURL,
-        category: _categoryController.text.trim().isEmpty
-            ? null
-            : _categoryController.text.trim(),
+        category: _selectedCategory,
         publishedAt: widget.article!.publishedAt,
         updatedAt: now,
         isPublished: _isPublished,
@@ -123,9 +134,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
         content: _contentController.text.trim(),
         thumbnailPath: 'media/articles/$id/thumbnail.jpg',
         thumbnailURL: '',
-        category: _categoryController.text.trim().isEmpty
-            ? null
-            : _categoryController.text.trim(),
+        category: _selectedCategory,
         publishedAt: now,
         updatedAt: now,
         isPublished: _isPublished,
@@ -248,10 +257,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                       validator: (v) => v!.trim().isEmpty ? l10n.contentRequired : null,
                     ),
                     const SizedBox(height: 16),
-                    _buildField(
-                      controller: _categoryController,
-                      label: l10n.categoryLabel,
-                    ),
+                    _buildCategoryDropdown(context, l10n),
                     const SizedBox(height: 16),
                     SwitchListTile(
                       value: _isPublished,
@@ -283,6 +289,48 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildCategoryDropdown(BuildContext context, AppLocalizations l10n) {
+    final cs = Theme.of(context).colorScheme;
+
+    if (_categoriesLoading) {
+      return InputDecorator(
+        decoration: InputDecoration(labelText: l10n.categoryLabel),
+        child: const SizedBox(
+          height: 20,
+          width: 20,
+          child: Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    return DropdownButtonFormField<String>(
+      initialValue: _selectedCategory,
+      decoration: InputDecoration(labelText: l10n.categoryLabel),
+      hint: Text(
+        l10n.categoryLabel,
+        style: TextStyle(color: cs.onSurface.withValues(alpha: 0.5)),
+      ),
+      items: [
+        DropdownMenuItem<String>(
+          value: null,
+          child: Text(
+            '— ${l10n.categoryLabel} —',
+            style: TextStyle(color: cs.onSurface.withValues(alpha: 0.5)),
+          ),
+        ),
+        ..._categories.map(
+          (cat) => DropdownMenuItem<String>(
+            value: cat.name,
+            child: Text(cat.name),
+          ),
+        ),
+      ],
+      onChanged: (val) => setState(() => _selectedCategory = val),
     );
   }
 
