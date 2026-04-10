@@ -51,14 +51,27 @@ class _HomeView extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.newspaper_outlined),
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.myFirestoreArticles),
+            onPressed: () async {
+              await Navigator.pushNamed(
+                  context, AppRoutes.myFirestoreArticles);
+              if (context.mounted) {
+                context
+                    .read<RemoteArticleBloc>()
+                    .add(const GetPublishedArticlesEvent());
+              }
+            },
             tooltip: 'My Articles',
           ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.uploadArticle),
+            onPressed: () async {
+              await Navigator.pushNamed(context, AppRoutes.uploadArticle);
+              if (context.mounted) {
+                context
+                    .read<RemoteArticleBloc>()
+                    .add(const GetPublishedArticlesEvent());
+              }
+            },
             tooltip: 'Write Article',
           ),
           BlocBuilder<AuthBloc, AuthState>(

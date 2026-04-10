@@ -29,7 +29,12 @@ final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // ── External ────────────────────────────────────────────────────────────────
-  sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(
+    () => FirebaseFirestore.instanceFor(
+      app: FirebaseFirestore.instance.app,
+      databaseId: 'newsly',
+    ),
+  );
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => AppDatabase());
