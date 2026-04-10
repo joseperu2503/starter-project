@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/theme/app_theme.dart';
+import 'package:newsly/config/theme/theme_cubit.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/auth/presentation/screens/change_password_screen.dart';
 import 'package:newsly/features/auth/presentation/screens/personal_info_screen.dart';
+import 'package:newsly/injection_container.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: BlocBuilder<AuthBloc, AuthState>(
@@ -22,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               // ── User header ────────────────────────────────────────
               Container(
-                color: AppTheme.surface,
+                color: cs.surface,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 28,
@@ -32,7 +36,6 @@ class ProfileScreen extends StatelessWidget {
                     CircleAvatar(
                       radius: 32,
                       backgroundColor: AppTheme.primary,
-
                       child: Text(
                         user != null && user.displayName.isNotEmpty
                             ? user.displayName[0].toUpperCase()
@@ -53,18 +56,18 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Text(
                             user?.displayName ?? '',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: AppTheme.textPrimary,
+                              color: cs.onSurface,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             user?.email ?? '',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppTheme.textSecondary,
+                              color: cs.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -109,11 +112,23 @@ class ProfileScreen extends StatelessWidget {
 
               // ── Preferences section ────────────────────────────────
               _SectionHeader(title: 'Preferences'),
-              _ProfileTile(
-                icon: Icons.dark_mode_outlined,
-                title: 'Dark Mode',
-                trailing: const _ComingSoonBadge(),
-                onTap: null,
+              BlocBuilder<ThemeCubit, ThemeMode>(
+                bloc: sl<ThemeCubit>(),
+                builder: (context, themeMode) {
+                  final isDark = themeMode == ThemeMode.dark;
+                  return _ProfileTile(
+                    icon: isDark
+                        ? Icons.dark_mode
+                        : Icons.dark_mode_outlined,
+                    title: 'Dark Mode',
+                    trailing: Switch(
+                      value: isDark,
+                      onChanged: (_) => sl<ThemeCubit>().toggleTheme(),
+                      activeThumbColor: AppTheme.accent,
+                    ),
+                    onTap: () => sl<ThemeCubit>().toggleTheme(),
+                  );
+                },
               ),
               _ProfileTile(
                 icon: Icons.language_outlined,
@@ -177,14 +192,15 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: AppTheme.textSecondary,
+          color: cs.onSurface.withValues(alpha: 0.5),
           letterSpacing: 1.2,
         ),
       ),
@@ -195,38 +211,39 @@ class _SectionHeader extends StatelessWidget {
 class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Color titleColor;
-  final Color iconColor;
+  final Color? titleColor;
+  final Color? iconColor;
   final Widget? trailing;
   final VoidCallback? onTap;
 
   const _ProfileTile({
     required this.icon,
     required this.title,
-    this.titleColor = AppTheme.textPrimary,
-    this.iconColor = AppTheme.textSecondary,
+    this.titleColor,
+    this.iconColor,
     this.trailing,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
-      color: AppTheme.surface,
+      color: cs.surface,
       child: ListTile(
-        leading: Icon(icon, color: iconColor, size: 22),
+        leading: Icon(icon, color: iconColor ?? cs.onSurface.withValues(alpha: 0.6), size: 22),
         title: Text(
           title,
           style: TextStyle(
             fontSize: 15,
-            color: titleColor,
+            color: titleColor ?? cs.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
         trailing:
             trailing ??
             (onTap != null
-                ? const Icon(Icons.chevron_right, color: AppTheme.textSecondary)
+                ? Icon(Icons.chevron_right, color: cs.onSurface.withValues(alpha: 0.4))
                 : null),
         onTap: onTap,
       ),

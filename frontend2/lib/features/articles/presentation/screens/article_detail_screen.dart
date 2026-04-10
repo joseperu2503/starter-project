@@ -30,22 +30,27 @@ class _ArticleDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 280,
             pinned: true,
-            backgroundColor: AppTheme.surface,
-            foregroundColor: AppTheme.textPrimary,
+            backgroundColor: cs.surface,
+            foregroundColor: cs.onSurface,
             flexibleSpace: FlexibleSpaceBar(
               background: CachedNetworkImage(
                 imageUrl: article.thumbnailURL,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: AppTheme.background),
-                errorWidget: (context, url, error) =>
-                    Container(color: AppTheme.background,
-                      child: const Icon(Icons.image_not_supported_outlined)),
+                placeholder: (context, url) => Container(color: scaffoldBg),
+                errorWidget: (context, url, error) => Container(
+                  color: scaffoldBg,
+                  child: Icon(Icons.image_not_supported_outlined,
+                      color: cs.onSurface.withValues(alpha: 0.4)),
+                ),
               ),
             ),
             actions: [
@@ -56,7 +61,7 @@ class _ArticleDetailView extends StatelessWidget {
                   return IconButton(
                     icon: Icon(
                       isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      color: isSaved ? AppTheme.accent : AppTheme.textPrimary,
+                      color: isSaved ? AppTheme.accent : cs.onSurface,
                     ),
                     onPressed: () {
                       if (isSaved) {
@@ -85,7 +90,7 @@ class _ArticleDetailView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.accent.withValues(alpha: 0.1),
+                        color: AppTheme.accent.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -100,50 +105,54 @@ class _ArticleDetailView extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     article.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.textPrimary,
+                      color: cs.onSurface,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.person_outline,
-                          size: 16, color: AppTheme.textSecondary),
+                      Icon(Icons.person_outline,
+                          size: 16,
+                          color: cs.onSurface.withValues(alpha: 0.6)),
                       const SizedBox(width: 4),
                       Text(
                         article.author,
-                        style: const TextStyle(
-                            fontSize: 13, color: AppTheme.textSecondary),
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: cs.onSurface.withValues(alpha: 0.6)),
                       ),
                       const Spacer(),
-                      const Icon(Icons.calendar_today_outlined,
-                          size: 14, color: AppTheme.textSecondary),
+                      Icon(Icons.calendar_today_outlined,
+                          size: 14,
+                          color: cs.onSurface.withValues(alpha: 0.6)),
                       const SizedBox(width: 4),
                       Text(
                         DateFormat('MMM d, yyyy').format(article.publishedAt),
-                        style: const TextStyle(
-                            fontSize: 13, color: AppTheme.textSecondary),
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: cs.onSurface.withValues(alpha: 0.6)),
                       ),
                     ],
                   ),
                   const Divider(height: 32),
                   Text(
                     article.description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textPrimary,
+                      color: cs.onSurface,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     article.content,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
-                      color: AppTheme.textSecondary,
+                      color: cs.onSurface.withValues(alpha: 0.7),
                       height: 1.8,
                     ),
                   ),

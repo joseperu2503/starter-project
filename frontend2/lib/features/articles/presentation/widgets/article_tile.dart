@@ -22,12 +22,15 @@ class ArticleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: cs.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -52,7 +55,7 @@ class ArticleTile extends StatelessWidget {
                 placeholder: (context, url) => Container(
                   width: 110,
                   height: 110,
-                  color: AppTheme.background,
+                  color: scaffoldBg,
                   child: const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
@@ -60,9 +63,9 @@ class ArticleTile extends StatelessWidget {
                 errorWidget: (context, url, error) => Container(
                   width: 110,
                   height: 110,
-                  color: AppTheme.background,
-                  child: const Icon(Icons.image_not_supported_outlined,
-                      color: AppTheme.textSecondary),
+                  color: scaffoldBg,
+                  child: Icon(Icons.image_not_supported_outlined,
+                      color: cs.onSurface.withValues(alpha: 0.4)),
                 ),
               ),
             ),
@@ -77,7 +80,7 @@ class ArticleTile extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withValues(alpha: 0.1),
+                          color: AppTheme.accent.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -94,10 +97,10 @@ class ArticleTile extends StatelessWidget {
                       article.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.textPrimary,
+                        color: cs.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -106,18 +109,18 @@ class ArticleTile extends StatelessWidget {
                         Expanded(
                           child: Text(
                             article.author,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
-                              color: AppTheme.textSecondary,
+                              color: cs.onSurface.withValues(alpha: 0.6),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         Text(
                           DateFormat('MMM d').format(article.publishedAt),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppTheme.textSecondary,
+                            color: cs.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                         if (onSave != null) ...[
@@ -129,7 +132,7 @@ class ArticleTile extends StatelessWidget {
                               size: 18,
                               color: isSaved
                                   ? AppTheme.accent
-                                  : AppTheme.textSecondary,
+                                  : cs.onSurface.withValues(alpha: 0.4),
                             ),
                           ),
                         ],

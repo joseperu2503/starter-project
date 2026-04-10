@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:newsly/config/theme/theme_cubit.dart';
 
 import 'package:newsly/features/articles/data/data_sources/local/app_database.dart';
 import 'package:newsly/features/articles/data/data_sources/remote/firestore_article_data_source.dart';
@@ -28,6 +29,9 @@ import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
+  // ── Theme ───────────────────────────────────────────────────────────────────
+  sl.registerLazySingleton(() => ThemeCubit());
+
   // ── External ────────────────────────────────────────────────────────────────
   sl.registerLazySingleton(
     () => FirebaseFirestore.instanceFor(

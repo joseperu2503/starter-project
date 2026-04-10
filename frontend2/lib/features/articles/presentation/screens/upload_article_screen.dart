@@ -175,62 +175,75 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Thumbnail picker
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: Container(
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: AppTheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE0E0E0)),
-                          image: _thumbnail != null
-                              ? DecorationImage(
-                                  image: FileImage(_thumbnail!),
-                                  fit: BoxFit.cover,
+                    Builder(builder: (context) {
+                      final cs = Theme.of(context).colorScheme;
+                      return GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          height: 180,
+                          decoration: BoxDecoration(
+                            color: cs.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: cs.onSurface.withValues(alpha: 0.15)),
+                            image: _thumbnail != null
+                                ? DecorationImage(
+                                    image: FileImage(_thumbnail!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: _thumbnail == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_photo_alternate_outlined,
+                                        size: 48,
+                                        color: cs.onSurface
+                                            .withValues(alpha: 0.4)),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Tap to select thumbnail',
+                                      style: TextStyle(
+                                          color: cs.onSurface
+                                              .withValues(alpha: 0.5)),
+                                    ),
+                                  ],
                                 )
                               : null,
                         ),
-                        child: _thumbnail == null
-                            ? const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add_photo_alternate_outlined,
-                                      size: 48,
-                                      color: AppTheme.textSecondary),
-                                  SizedBox(height: 8),
-                                  Text('Tap to select thumbnail',
-                                      style: TextStyle(
-                                          color: AppTheme.textSecondary)),
-                                ],
-                              )
-                            : null,
-                      ),
-                    ),
+                      );
+                    }),
                     const SizedBox(height: 20),
                     // Author display (read-only)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: AppTheme.background,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.person_outline,
-                              size: 18, color: AppTheme.textSecondary),
-                          const SizedBox(width: 8),
-                          Text(
-                            authorName,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: AppTheme.textPrimary,
+                    Builder(builder: (context) {
+                      final cs = Theme.of(context).colorScheme;
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: cs.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: cs.onSurface.withValues(alpha: 0.15)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.person_outline,
+                                size: 18,
+                                color: cs.onSurface.withValues(alpha: 0.5)),
+                            const SizedBox(width: 8),
+                            Text(
+                              authorName,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: cs.onSurface,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          ],
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _titleController,
