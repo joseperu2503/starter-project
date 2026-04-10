@@ -22,13 +22,14 @@ class MyFirestoreArticlesScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           sl<RemoteArticleBloc>()..add(GetMyArticlesEvent(authorId)),
-      child: const _MyFirestoreArticlesView(),
+      child: _MyFirestoreArticlesView(authorId: authorId),
     );
   }
 }
 
 class _MyFirestoreArticlesView extends StatelessWidget {
-  const _MyFirestoreArticlesView();
+  final String authorId;
+  const _MyFirestoreArticlesView({required this.authorId});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +37,12 @@ class _MyFirestoreArticlesView extends StatelessWidget {
       appBar: AppBar(title: const Text('My Articles')),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.accent,
-        onPressed: () =>
-            Navigator.pushNamed(context, AppRoutes.uploadArticle),
+        onPressed: () async {
+          await Navigator.pushNamed(context, AppRoutes.uploadArticle);
+          if (context.mounted) {
+            context.read<RemoteArticleBloc>().add(GetMyArticlesEvent(authorId));
+          }
+        },
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: BlocBuilder<RemoteArticleBloc, RemoteArticleState>(
@@ -93,11 +98,18 @@ class _MyFirestoreArticlesView extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.edit_outlined,
                             color: AppTheme.textSecondary),
-                        onPressed: () => Navigator.pushNamed(
-                          context,
-                          AppRoutes.uploadArticle,
-                          arguments: article,
-                        ),
+                        onPressed: () async {
+                          await Navigator.pushNamed(
+                            context,
+                            AppRoutes.uploadArticle,
+                            arguments: article,
+                          );
+                          if (context.mounted) {
+                            context
+                                .read<RemoteArticleBloc>()
+                                .add(GetMyArticlesEvent(authorId));
+                          }
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline,

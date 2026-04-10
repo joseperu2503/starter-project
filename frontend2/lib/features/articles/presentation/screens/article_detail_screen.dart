@@ -7,11 +7,26 @@ import 'package:newsly/features/articles/domain/entities/article_entity.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/local/local_article_state.dart';
+import 'package:newsly/injection_container.dart';
 
 class ArticleDetailScreen extends StatelessWidget {
   final ArticleEntity article;
 
   const ArticleDetailScreen({super.key, required this.article});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticlesEvent()),
+      child: _ArticleDetailView(article: article),
+    );
+  }
+}
+
+class _ArticleDetailView extends StatelessWidget {
+  final ArticleEntity article;
+
+  const _ArticleDetailView({required this.article});
 
   @override
   Widget build(BuildContext context) {
