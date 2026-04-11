@@ -66,13 +66,58 @@ Each entry explains what was added, why, and where it lives.
 - **What**: Rules restricting uploads to authenticated users, max 5MB, images only.
 - **Why**: Prevents unauthorized uploads and limits abuse of Storage bandwidth and quota.
 
+### 12. Guest mode with Welcome screen
+- **Where**: `frontend2/lib/features/auth/presentation/screens/welcome_screen.dart`, `frontend2/lib/features/auth/presentation/bloc/auth_bloc.dart`
+- **What**: Users can browse and read articles without creating an account. A Welcome screen offers Sign In, Register, and Continue as Guest. Guests see a read-only home feed with a sign-in banner. Settings (dark mode, language) are accessible from a guest settings sheet.
+- **Why**: Reduces onboarding friction — new users can evaluate the content before committing to registration.
+
+### 13. Follow system
+- **Where**: `frontend2/lib/features/social/`, `backend/firestore.rules`
+- **What**: Authenticated users can follow/unfollow other authors. Author profile screen shows follower count and a follow button. Follows are stored in a `follows` Firestore collection with optimistic UI updates.
+- **Why**: Adds a social layer that enables personalized feeds and author discovery.
+
+### 14. Push notifications for new articles
+- **Where**: `backend/functions/index.js`, `frontend2/lib/core/services/notification_service.dart`
+- **What**: Firebase Cloud Function (2nd gen) triggers on new published article creation in Firestore. Queries the author's followers, fetches their FCM tokens from the `users` collection, and sends a multicast push notification.
+- **Why**: Drives re-engagement — followers are notified in real time when authors they follow publish new content.
+
+### 15. Likes and comments
+- **Where**: `frontend2/lib/features/articles/presentation/screens/article_detail_screen.dart`, `frontend2/lib/features/articles/data/data_sources/remote/firestore_interaction_data_source.dart`
+- **What**: Authenticated users can like articles (with optimistic toggle) and post/delete comments. Like count, comment list, and a comment input are shown at the bottom of the article detail screen. Guests see counts but cannot interact.
+- **Why**: Core engagement mechanics for any content platform. Demonstrates subcollection design, optimistic UI, and role-based interaction.
+
+### 16. Google Sign-In
+- **Where**: `frontend2/lib/features/auth/`, `frontend2/lib/features/auth/presentation/widgets/google_sign_in_button.dart`
+- **What**: One-tap Google authentication available on the Welcome screen and Login screen. Uses `google_sign_in` + `FirebaseAuth.signInWithCredential`. On sign-in, `GoogleSignIn.signOut()` is also called on logout to clear the Google session.
+- **Why**: Reduces sign-up friction significantly — most users prefer OAuth over email/password flows.
+
+### 17. Category master list from Firestore
+- **Where**: `frontend2/lib/features/articles/data/data_sources/remote/firestore_category_data_source.dart`, `frontend2/lib/features/articles/presentation/screens/upload_article_screen.dart`
+- **What**: Categories are stored in a `categories` Firestore collection (managed via Firebase Console). The article form loads them dynamically and presents a dropdown selector instead of a free-text field.
+- **Why**: Ensures consistent categorization across all articles — no typos or inconsistent tags. Categories can be updated server-side without a new app release.
+
+### 18. Real-time article search
+- **Where**: `frontend2/lib/features/articles/presentation/screens/home_screen.dart`
+- **What**: A search bar in the home screen filters articles in real time by title, category, and author name. Filtering is client-side on the already-loaded list — no extra Firestore queries. A clear button resets the search.
+- **Why**: Essential discoverability feature for any content app. Client-side filtering is instant and cost-free.
+
+### 19. Article view tracking
+- **Where**: `frontend2/lib/features/articles/data/data_sources/remote/firestore_interaction_data_source.dart`, `frontend2/lib/features/articles/presentation/bloc/interaction/interaction_bloc.dart`
+- **What**: Each article detail open registers a unique view in a `views/{userId}` subcollection. The author's own views are excluded. View count is displayed alongside likes and comments in the article detail screen.
+- **Why**: Provides engagement data per article. Unique-per-user counting prevents view inflation and enables future ranking/trending features.
+
+### 20. A/B Testing with Firebase Remote Config & Analytics
+- **Where**: `frontend2/lib/core/services/remote_config_service.dart`, `frontend2/lib/core/services/analytics_service.dart`, `frontend2/lib/features/articles/presentation/widgets/article_card.dart`
+- **What**: Remote Config parameter `article_card_style` controls whether the home feed renders as a compact list (`list`) or large image cards (`card`). Firebase A/B Testing experiment `article_card_style_test_android` splits users 50/50. Every article open fires an `article_opened` Analytics event with `card_style`, `article_id`, and `category` parameters for measuring CTR per variant.
+- **Why**: Demonstrates production-grade experimentation infrastructure. Allows data-driven UI decisions without shipping a new app version.
+
 ---
 
 ## Ideas (not yet implemented)
 
 - Article versioning with edit history stored in Firestore subcollections
 - Admin role via Firebase custom claims to moderate/unpublish articles
-- Push notifications with Firebase Cloud Messaging on new article publish
-- Full-text search via Algolia or Firestore array-contains for category filtering
+- Trending screen — articles ranked by `viewCount` from Firestore
+- Personalized feed — articles only from followed authors
 - CI/CD with GitHub Actions for automated `flutter test` and `firebase deploy`
 - Flutter Web dashboard for desktop article management
