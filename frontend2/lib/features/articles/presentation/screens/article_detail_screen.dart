@@ -34,12 +34,13 @@ class ArticleDetailScreen extends StatelessWidget {
             final userId = authState is AuthAuthenticated
                 ? authState.user.id
                 : '';
-            return sl<InteractionBloc>()
-              ..add(LoadInteractionsEvent(
+            return sl<InteractionBloc>()..add(
+              LoadInteractionsEvent(
                 articleId: article.id,
                 userId: userId,
                 authorId: article.authorId,
-              ));
+              ),
+            );
           },
         ),
       ],
@@ -62,6 +63,143 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
   final _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.article.isPremium) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showPremiumSheet();
+      });
+    }
+  }
+
+  void _showPremiumSheet() async {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              // Premium badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  l10n.premiumBadge,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Lock icon
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lock_outline_rounded,
+                  size: 32,
+                  color: AppTheme.accent,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.premiumTitle,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.premiumMessage,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: cs.onSurface.withValues(alpha: 0.65),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              // Subscribe button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Close sheet, then exit article screen
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.subscribe,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Maybe later
+              TextButton(
+                onPressed: () {
+                  // Close sheet, then exit article screen
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  l10n.maybeLater,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: cs.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (mounted) Navigator.pop(context);
+  }
+
+  @override
   void dispose() {
     _commentController.dispose();
     _scrollController.dispose();
@@ -71,12 +209,14 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
   void _submitComment(String userId, String displayName) {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
-    context.read<InteractionBloc>().add(AddCommentEvent(
-          articleId: widget.article.id,
-          authorId: userId,
-          author: displayName,
-          content: text,
-        ));
+    context.read<InteractionBloc>().add(
+      AddCommentEvent(
+        articleId: widget.article.id,
+        authorId: userId,
+        author: displayName,
+        content: text,
+      ),
+    );
     _commentController.clear();
     FocusScope.of(context).unfocus();
   }
@@ -108,15 +248,18 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                 placeholder: (context, url) => Container(color: scaffoldBg),
                 errorWidget: (context, url, error) => Container(
                   color: scaffoldBg,
-                  child: Icon(Icons.image_not_supported_outlined,
-                      color: cs.onSurface.withValues(alpha: 0.4)),
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    color: cs.onSurface.withValues(alpha: 0.4),
+                  ),
                 ),
               ),
             ),
             actions: [
               BlocBuilder<LocalArticleBloc, LocalArticleState>(
                 builder: (context, state) {
-                  final isSaved = state is LocalArticlesLoaded &&
+                  final isSaved =
+                      state is LocalArticlesLoaded &&
                       state.articles.any((a) => a.id == widget.article.id);
                   return IconButton(
                     icon: Icon(
@@ -125,13 +268,13 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                     ),
                     onPressed: () {
                       if (isSaved) {
-                        context
-                            .read<LocalArticleBloc>()
-                            .add(RemoveSavedArticleEvent(widget.article.id));
+                        context.read<LocalArticleBloc>().add(
+                          RemoveSavedArticleEvent(widget.article.id),
+                        );
                       } else {
-                        context
-                            .read<LocalArticleBloc>()
-                            .add(SaveArticleEvent(widget.article));
+                        context.read<LocalArticleBloc>().add(
+                          SaveArticleEvent(widget.article),
+                        );
                       }
                     },
                   );
@@ -145,23 +288,54 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.article.category != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.accent.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        widget.article.category!,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.accent,
+                  Row(
+                    children: [
+                      if (widget.article.category != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.accent.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            widget.article.category!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.accent,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      if (widget.article.isPremium) ...[
+                        if (widget.article.category != null)
+                          const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context)!.premiumBadge,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     widget.article.title,
@@ -174,9 +348,11 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.person_outline,
-                          size: 16,
-                          color: cs.onSurface.withValues(alpha: 0.6)),
+                      Icon(
+                        Icons.person_outline,
+                        size: 16,
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                      ),
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () => Navigator.push(
@@ -201,16 +377,20 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.calendar_today_outlined,
-                          size: 14,
-                          color: cs.onSurface.withValues(alpha: 0.6)),
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 14,
+                        color: cs.onSurface.withValues(alpha: 0.6),
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        DateFormat('MMM d, yyyy')
-                            .format(widget.article.publishedAt),
+                        DateFormat(
+                          'MMM d, yyyy',
+                        ).format(widget.article.publishedAt),
                         style: TextStyle(
-                            fontSize: 13,
-                            color: cs.onSurface.withValues(alpha: 0.6)),
+                          fontSize: 13,
+                          color: cs.onSurface.withValues(alpha: 0.6),
+                        ),
                       ),
                     ],
                   ),
@@ -222,12 +402,12 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                         children: [
                           GestureDetector(
                             onTap: isAuthenticated
-                                ? () => context
-                                    .read<InteractionBloc>()
-                                    .add(ToggleLikeEvent(
+                                ? () => context.read<InteractionBloc>().add(
+                                    ToggleLikeEvent(
                                       articleId: widget.article.id,
                                       userId: currentUserId,
-                                    ))
+                                    ),
+                                  )
                                 : null,
                             child: Row(
                               children: [
@@ -252,9 +432,11 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                             ),
                           ),
                           const SizedBox(width: 20),
-                          Icon(Icons.chat_bubble_outline,
-                              size: 20,
-                              color: cs.onSurface.withValues(alpha: 0.5)),
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 20,
+                            color: cs.onSurface.withValues(alpha: 0.5),
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             '${state.comments.length} ${l10n.comments}',
@@ -264,9 +446,11 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                             ),
                           ),
                           const SizedBox(width: 20),
-                          Icon(Icons.visibility_outlined,
-                              size: 20,
-                              color: cs.onSurface.withValues(alpha: 0.5)),
+                          Icon(
+                            Icons.visibility_outlined,
+                            size: 20,
+                            color: cs.onSurface.withValues(alpha: 0.5),
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             '${state.viewCount} ${l10n.views}',
@@ -334,8 +518,7 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                   BlocBuilder<InteractionBloc, InteractionState>(
                     builder: (context, state) {
                       if (state.isLoading) {
-                        return const Center(
-                            child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (state.comments.isEmpty) {
                         return Padding(
@@ -351,12 +534,14 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                       }
                       return Column(
                         children: state.comments
-                            .map((c) => _CommentTile(
-                                  comment: c,
-                                  currentUserId: currentUserId,
-                                  articleId: widget.article.id,
-                                  l10n: l10n,
-                                ))
+                            .map(
+                              (c) => _CommentTile(
+                                comment: c,
+                                currentUserId: currentUserId,
+                                articleId: widget.article.id,
+                                l10n: l10n,
+                              ),
+                            )
                             .toList(),
                       );
                     },
@@ -403,7 +588,9 @@ class _CommentInput extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                 ),
               ),
             ),
@@ -422,8 +609,7 @@ class _CommentInput extends StatelessWidget {
                     icon: const Icon(Icons.send_rounded),
                     color: AppTheme.accent,
                     style: IconButton.styleFrom(
-                      backgroundColor:
-                          AppTheme.accent.withValues(alpha: 0.12),
+                      backgroundColor: AppTheme.accent.withValues(alpha: 0.12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -463,9 +649,7 @@ class _CommentTile extends StatelessWidget {
             radius: 18,
             backgroundColor: AppTheme.accent.withValues(alpha: 0.15),
             child: Text(
-              comment.author.isNotEmpty
-                  ? comment.author[0].toUpperCase()
-                  : '?',
+              comment.author.isNotEmpty ? comment.author[0].toUpperCase() : '?',
               style: const TextStyle(
                 color: AppTheme.accent,
                 fontWeight: FontWeight.w700,
@@ -476,8 +660,7 @@ class _CommentTile extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: cs.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
@@ -548,15 +731,11 @@ class _CommentTile extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<InteractionBloc>().add(DeleteCommentEvent(
-                    articleId: articleId,
-                    commentId: comment.id,
-                  ));
+              context.read<InteractionBloc>().add(
+                DeleteCommentEvent(articleId: articleId, commentId: comment.id),
+              );
             },
-            child: Text(
-              l10n.delete,
-              style: const TextStyle(color: Colors.red),
-            ),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

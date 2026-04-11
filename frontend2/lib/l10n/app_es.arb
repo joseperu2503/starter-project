@@ -114,5 +114,13 @@
   "searchHint": "Buscar artículos...",
   "noSearchResults": "Ningún artículo coincide con tu búsqueda.",
 
-  "views": "vistas"
+  "views": "vistas",
+
+  "premiumArticle": "Artículo premium",
+  "premiumArticleSubtitle": "Solo los suscriptores pueden leer este artículo",
+  "premiumTitle": "Contenido Premium",
+  "premiumMessage": "Este artículo es exclusivo para suscriptores. Suscríbete para desbloquear el acceso completo a todo el contenido premium.",
+  "premiumBadge": "PREMIUM",
+  "subscribe": "Suscribirse",
+  "maybeLater": "Quizás después"
 }

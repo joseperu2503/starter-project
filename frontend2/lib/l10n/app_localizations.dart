@@ -685,6 +685,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'views'**
   String get views;
+
+  /// No description provided for @premiumArticle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium article'**
+  String get premiumArticle;
+
+  /// No description provided for @premiumArticleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only subscribers can read this article'**
+  String get premiumArticleSubtitle;
+
+  /// No description provided for @premiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Content'**
+  String get premiumTitle;
+
+  /// No description provided for @premiumMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This article is exclusive for subscribers. Subscribe to unlock full access to all premium content.'**
+  String get premiumMessage;
+
+  /// No description provided for @premiumBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'PREMIUM'**
+  String get premiumBadge;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe'**
+  String get subscribe;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get maybeLater;
 }
 
 class _AppLocalizationsDelegate

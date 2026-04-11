@@ -46,6 +46,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
 
   File? _thumbnail;
   bool _isPublished = true;
+  bool _isPremium = false;
   String? _selectedCategory;
   List<CategoryItem> _categories = [];
   bool _categoriesLoading = true;
@@ -61,6 +62,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
       _contentController.text = widget.article!.content;
       _selectedCategory = widget.article!.category;
       _isPublished = widget.article!.isPublished;
+      _isPremium = widget.article!.isPremium;
     }
     _loadCategories();
   }
@@ -116,6 +118,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
         thumbnailPath: widget.article!.thumbnailPath,
         thumbnailURL: widget.article!.thumbnailURL,
         category: _selectedCategory,
+        isPremium: _isPremium,
         publishedAt: widget.article!.publishedAt,
         updatedAt: now,
         isPublished: _isPublished,
@@ -135,6 +138,7 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
         thumbnailPath: 'media/articles/$id/thumbnail.jpg',
         thumbnailURL: '',
         category: _selectedCategory,
+        isPremium: _isPremium,
         publishedAt: now,
         updatedAt: now,
         isPublished: _isPublished,
@@ -264,6 +268,14 @@ class _UploadArticleViewState extends State<_UploadArticleView> {
                       onChanged: (v) => setState(() => _isPublished = v),
                       title: Text(l10n.publishImmediately),
                       subtitle: Text(l10n.saveDraft),
+                      activeThumbColor: AppTheme.accent,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    SwitchListTile(
+                      value: _isPremium,
+                      onChanged: (v) => setState(() => _isPremium = v),
+                      title: Text(l10n.premiumArticle),
+                      subtitle: Text(l10n.premiumArticleSubtitle),
                       activeThumbColor: AppTheme.accent,
                       contentPadding: EdgeInsets.zero,
                     ),

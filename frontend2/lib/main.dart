@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
@@ -24,8 +23,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initDependencies();
 
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  debugPrint('>>> FCM Token: $fcmToken');
+  // final fcmToken = await FirebaseMessaging.instance.getToken();
+  // debugPrint('>>> FCM Token: $fcmToken');
 
   await sl<ThemeCubit>().loadTheme();
   await sl<LocaleCubit>().loadLocale();

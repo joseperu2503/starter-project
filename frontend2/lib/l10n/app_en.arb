@@ -114,5 +114,13 @@
   "searchHint": "Search articles...",
   "noSearchResults": "No articles match your search.",
 
-  "views": "views"
+  "views": "views",
+
+  "premiumArticle": "Premium article",
+  "premiumArticleSubtitle": "Only subscribers can read this article",
+  "premiumTitle": "Premium Content",
+  "premiumMessage": "This article is exclusive for subscribers. Subscribe to unlock full access to all premium content.",
+  "premiumBadge": "PREMIUM",
+  "subscribe": "Subscribe",
+  "maybeLater": "Maybe later"
 }

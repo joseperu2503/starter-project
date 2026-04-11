@@ -15,6 +15,7 @@ class ArticleModel extends ArticleEntity {
     required super.publishedAt,
     required super.updatedAt,
     required super.isPublished,
+    super.isPremium = false,
   });
 
   factory ArticleModel.fromFirestore(DocumentSnapshot doc) {
@@ -32,6 +33,7 @@ class ArticleModel extends ArticleEntity {
       publishedAt: (data['publishedAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       isPublished: data['isPublished'] as bool,
+      isPremium: data['isPremium'] as bool? ?? false,
     );
   }
 
@@ -49,6 +51,7 @@ class ArticleModel extends ArticleEntity {
       'publishedAt': Timestamp.fromDate(publishedAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
       'isPublished': isPublished,
+      'isPremium': isPremium,
     };
   }
 
@@ -66,6 +69,7 @@ class ArticleModel extends ArticleEntity {
       publishedAt: entity.publishedAt,
       updatedAt: entity.updatedAt,
       isPublished: entity.isPublished,
+      isPremium: entity.isPremium,
     );
   }
 
@@ -82,6 +86,7 @@ class ArticleModel extends ArticleEntity {
     DateTime? publishedAt,
     DateTime? updatedAt,
     bool? isPublished,
+    bool? isPremium,
   }) {
     return ArticleModel(
       id: id ?? this.id,
@@ -96,6 +101,7 @@ class ArticleModel extends ArticleEntity {
       publishedAt: publishedAt ?? this.publishedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isPublished: isPublished ?? this.isPublished,
+      isPremium: isPremium ?? this.isPremium,
     );
   }
 }

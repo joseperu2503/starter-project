@@ -305,4 +305,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get views => 'views';
+
+  @override
+  String get premiumArticle => 'Premium article';
+
+  @override
+  String get premiumArticleSubtitle => 'Only subscribers can read this article';
+
+  @override
+  String get premiumTitle => 'Premium Content';
+
+  @override
+  String get premiumMessage =>
+      'This article is exclusive for subscribers. Subscribe to unlock full access to all premium content.';
+
+  @override
+  String get premiumBadge => 'PREMIUM';
+
+  @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get maybeLater => 'Maybe later';
 }
