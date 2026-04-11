@@ -9,6 +9,10 @@ import 'package:newsly/features/articles/presentation/bloc/local/local_article_s
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_bloc.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_event.dart';
 import 'package:newsly/features/articles/presentation/bloc/remote/remote_article_state.dart';
+import 'package:newsly/core/services/analytics_service.dart';
+import 'package:newsly/core/services/remote_config_service.dart';
+import 'package:newsly/features/articles/domain/entities/article_entity.dart';
+import 'package:newsly/features/articles/presentation/widgets/article_card.dart';
 import 'package:newsly/features/articles/presentation/widgets/article_tile.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_event.dart';
@@ -47,11 +51,49 @@ class _HomeView extends StatefulWidget {
 class _HomeViewState extends State<_HomeView> {
   final _searchController = TextEditingController();
   String _query = '';
+  late final String _cardStyle;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardStyle = sl<RemoteConfigService>().articleCardStyle;
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _openArticle(BuildContext context, article) {
+    sl<AnalyticsService>().logArticleOpened(
+      articleId: article.id,
+      category: article.category ?? '',
+      cardStyle: _cardStyle,
+    );
+    Navigator.pushNamed(context, AppRoutes.articleDetail, arguments: article);
+  }
+
+  Widget _buildArticleTile({
+    required ArticleEntity article,
+    required BuildContext context,
+    bool isSaved = false,
+    VoidCallback? onSave,
+  }) {
+    if (_cardStyle == 'card') {
+      return ArticleCard(
+        article: article,
+        onTap: () => _openArticle(context, article),
+        isSaved: isSaved,
+        onSave: onSave,
+      );
+    }
+    return ArticleTile(
+      article: article,
+      onTap: () => _openArticle(context, article),
+      isSaved: isSaved,
+      onSave: onSave,
+    );
   }
 
   @override
@@ -200,17 +242,10 @@ class _HomeViewState extends State<_HomeView> {
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         itemCount: articles.length,
-                        itemBuilder: (context, index) {
-                          final article = articles[index];
-                          return ArticleTile(
-                            article: article,
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.articleDetail,
-                              arguments: article,
-                            ),
-                          );
-                        },
+                        itemBuilder: (context, index) => _buildArticleTile(
+                          article: articles[index],
+                          context: context,
+                        ),
                       ),
                     );
                   }
@@ -230,19 +265,14 @@ class _HomeViewState extends State<_HomeView> {
                           itemCount: articles.length,
                           itemBuilder: (context, index) {
                             final article = articles[index];
-                            return ArticleTile(
+                            return _buildArticleTile(
                               article: article,
+                              context: context,
                               isSaved: savedIds.contains(article.id),
-                              onTap: () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.articleDetail,
-                                arguments: article,
-                              ),
                               onSave: () {
                                 if (savedIds.contains(article.id)) {
-                                  context
-                                      .read<LocalArticleBloc>()
-                                      .add(RemoveSavedArticleEvent(article.id));
+                                  context.read<LocalArticleBloc>().add(
+                                      RemoveSavedArticleEvent(article.id));
                                 } else {
                                   context
                                       .read<LocalArticleBloc>()

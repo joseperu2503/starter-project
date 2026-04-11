@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:newsly/config/locale/locale_cubit.dart';
 import 'package:newsly/config/theme/theme_cubit.dart';
+import 'package:newsly/core/services/analytics_service.dart';
 import 'package:newsly/core/services/notification_service.dart';
+import 'package:newsly/core/services/remote_config_service.dart';
 import 'package:newsly/features/articles/data/data_sources/remote/firestore_category_data_source.dart';
 import 'package:newsly/features/articles/data/data_sources/remote/firestore_interaction_data_source.dart';
 import 'package:newsly/features/articles/presentation/bloc/interaction/interaction_bloc.dart';
@@ -51,7 +55,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseMessaging.instance);
+  sl.registerLazySingleton(() => FirebaseAnalytics.instance);
+  sl.registerLazySingleton(() => FirebaseRemoteConfig.instance);
   sl.registerLazySingleton(() => AppDatabase());
+
+  // ── Analytics & Remote Config ───────────────────────────────────────────────
+  sl.registerLazySingleton(() => AnalyticsService(sl()));
+  sl.registerLazySingleton(() => RemoteConfigService(sl()));
 
   // ── Notifications ───────────────────────────────────────────────────────────
   sl.registerLazySingleton(() => NotificationService(sl()));
