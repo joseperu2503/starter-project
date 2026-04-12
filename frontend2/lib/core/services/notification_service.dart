@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationService {
   final FirebaseMessaging _messaging;
@@ -6,19 +7,23 @@ class NotificationService {
   NotificationService(this._messaging);
 
   Future<void> initialize() async {
-    // Request permission (iOS + Android 13+)
+    // Firebase Messaging / APNs requires an Apple Developer account on iOS.
+    // Notifications are Android-only until APNs is configured.
+    if (defaultTargetPlatform == TargetPlatform.iOS) return;
+
     await _messaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
-    // Handle foreground messages
     FirebaseMessaging.onMessage.listen((message) {
-      // Messages are handled by the OS when app is in background/terminated.
-      // In foreground you'd show an in-app snackbar — handled at UI layer.
+      // In-app handling (e.g. snackbar) can be added here.
     });
   }
 
-  Future<String?> getToken() => _messaging.getToken();
+  Future<String?> getToken() async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) return null;
+    return _messaging.getToken();
+  }
 }

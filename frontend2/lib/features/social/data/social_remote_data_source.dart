@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 class SocialRemoteDataSource {
   final FirebaseFirestore _firestore;
@@ -8,7 +9,9 @@ class SocialRemoteDataSource {
   SocialRemoteDataSource(this._firestore, this._messaging);
 
   /// Saves or updates the FCM token for the current user in Firestore.
+  /// iOS is skipped — APNs requires an Apple Developer account.
   Future<void> saveUserToken(String uid, String displayName) async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) return;
     final token = await _messaging.getToken();
     if (token == null) return;
     await _firestore.collection('users').doc(uid).set({
