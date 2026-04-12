@@ -122,5 +122,14 @@
   "premiumMessage": "Este artículo es exclusivo para suscriptores. Suscríbete para desbloquear el acceso completo a todo el contenido premium.",
   "premiumBadge": "PREMIUM",
   "subscribe": "Suscribirse",
-  "maybeLater": "Quizás después"
+  "maybeLater": "Quizás después",
+
+  "discountBadge": "{percent} DE DESCUENTO",
+  "@discountBadge": { "placeholders": { "percent": { "type": "String" } } },
+  "discountTitle": "Oferta especial para ti",
+  "discountMessage": "Obtén {percent} de descuento en tu primer mes Premium. Desbloquea todos los artículos y apoya el periodismo de calidad.",
+  "@discountMessage": { "placeholders": { "percent": { "type": "String" } } },
+  "claimDiscount": "Obtener {percent} de descuento",
+  "@claimDiscount": { "placeholders": { "percent": { "type": "String" } } },
+  "noThanks": "No, gracias"
 }

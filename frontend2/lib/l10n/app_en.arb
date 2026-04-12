@@ -122,5 +122,14 @@
   "premiumMessage": "This article is exclusive for subscribers. Subscribe to unlock full access to all premium content.",
   "premiumBadge": "PREMIUM",
   "subscribe": "Subscribe",
-  "maybeLater": "Maybe later"
+  "maybeLater": "Maybe later",
+
+  "discountBadge": "{percent} OFF",
+  "@discountBadge": { "placeholders": { "percent": { "type": "String" } } },
+  "discountTitle": "Special Offer Just for You",
+  "discountMessage": "Get {percent} off your first month of Premium. Unlock all articles and support quality journalism.",
+  "@discountMessage": { "placeholders": { "percent": { "type": "String" } } },
+  "claimDiscount": "Claim {percent} Off",
+  "@claimDiscount": { "placeholders": { "percent": { "type": "String" } } },
+  "noThanks": "No thanks"
 }

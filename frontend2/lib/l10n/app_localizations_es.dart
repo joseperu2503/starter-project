@@ -334,4 +334,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get maybeLater => 'Quizás después';
+
+  @override
+  String discountBadge(String percent) {
+    return '$percent DE DESCUENTO';
+  }
+
+  @override
+  String get discountTitle => 'Oferta especial para ti';
+
+  @override
+  String discountMessage(String percent) {
+    return 'Obtén $percent de descuento en tu primer mes Premium. Desbloquea todos los artículos y apoya el periodismo de calidad.';
+  }
+
+  @override
+  String claimDiscount(String percent) {
+    return 'Obtener $percent de descuento';
+  }
+
+  @override
+  String get noThanks => 'No, gracias';
 }

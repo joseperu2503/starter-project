@@ -12,6 +12,8 @@ import 'package:newsly/features/articles/presentation/bloc/local/local_article_s
 import 'package:newsly/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newsly/features/auth/presentation/bloc/auth_state.dart';
 import 'package:newsly/features/social/presentation/screens/author_profile_screen.dart';
+import 'package:newsly/core/services/analytics_service.dart';
+import 'package:newsly/core/services/remote_config_service.dart';
 import 'package:newsly/injection_container.dart';
 import 'package:newsly/l10n/app_localizations.dart';
 
@@ -72,11 +74,37 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
     }
   }
 
-  void _showPremiumSheet() async {
+  Future<void> _showPremiumSheet() async {
+    final analytics = sl<AnalyticsService>();
+    final offer = sl<RemoteConfigService>().premiumRemarketingOffer;
+
+    analytics.logPremiumPaywallShown(articleId: widget.article.id);
+
+    final didDismiss = await _showPaywallSheet(offer: offer);
+
+    if (!mounted) return;
+
+    if (didDismiss) {
+      analytics.logPremiumDismissed(articleId: widget.article.id);
+      // Treatment: show remarketing offer sheet
+      if (offer != 'none') {
+        analytics.logPremiumRemarketingShown(
+          articleId: widget.article.id,
+          offer: offer,
+        );
+        await _showRemarketingSheet(offer: offer);
+      }
+    }
+
+    if (mounted) Navigator.pop(context);
+  }
+
+  /// Returns true if user tapped "Maybe later" (dismissed), false if subscribed.
+  Future<bool> _showPaywallSheet({required String offer}) async {
     final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
 
-    await showModalBottomSheet(
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isDismissible: false,
       enableDrag: false,
@@ -86,17 +114,14 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
       ),
       builder: (_) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 16),
               // Premium badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
@@ -114,7 +139,6 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Lock icon
               Container(
                 width: 64,
                 height: 64,
@@ -149,14 +173,16 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
-              // Subscribe button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Close sheet, then exit article screen
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    sl<AnalyticsService>().logPremiumSubscribeTapped(
+                      articleId: widget.article.id,
+                      source: 'paywall',
+                      offer: offer,
+                    );
+                    Navigator.pop(context, false);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accent,
@@ -169,19 +195,13 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
                   child: Text(
                     l10n.subscribe,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                        fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
-              // Maybe later
               TextButton(
-                onPressed: () {
-                  // Close sheet, then exit article screen
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context, true),
                 child: Text(
                   l10n.maybeLater,
                   style: TextStyle(
@@ -196,7 +216,127 @@ class _ArticleDetailViewState extends State<_ArticleDetailView> {
       },
     );
 
-    if (mounted) Navigator.pop(context);
+    return result ?? true;
+  }
+
+  Future<void> _showRemarketingSheet({required String offer}) async {
+    final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
+
+    // Parse discount percentage from offer key, e.g. 'discount_20' → '20%'
+    final discountLabel = offer.startsWith('discount_')
+        ? '${offer.replaceFirst('discount_', '')}%'
+        : '';
+
+    await showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Discount badge
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade600,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  l10n.discountBadge(discountLabel),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.green.shade600.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.local_offer_rounded,
+                  size: 32,
+                  color: Colors.green.shade600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.discountTitle,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.discountMessage(discountLabel),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: cs.onSurface.withValues(alpha: 0.65),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    sl<AnalyticsService>().logPremiumSubscribeTapped(
+                      articleId: widget.article.id,
+                      source: 'remarketing',
+                      offer: offer,
+                    );
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.claimDiscount(discountLabel),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  l10n.noThanks,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: cs.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override

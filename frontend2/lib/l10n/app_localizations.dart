@@ -727,6 +727,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Maybe later'**
   String get maybeLater;
+
+  /// No description provided for @discountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} OFF'**
+  String discountBadge(String percent);
+
+  /// No description provided for @discountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Offer Just for You'**
+  String get discountTitle;
+
+  /// No description provided for @discountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Get {percent} off your first month of Premium. Unlock all articles and support quality journalism.'**
+  String discountMessage(String percent);
+
+  /// No description provided for @claimDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim {percent} Off'**
+  String claimDiscount(String percent);
+
+  /// No description provided for @noThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'No thanks'**
+  String get noThanks;
 }
 
 class _AppLocalizationsDelegate
