@@ -30,11 +30,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<AuthBloc>().add(RegisterEvent(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          displayName: _nameController.text.trim(),
-        ));
+    context.read<AuthBloc>().add(
+      RegisterEvent(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        displayName: _nameController.text.trim(),
+      ),
+    );
   }
 
   @override
@@ -47,13 +49,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
-          if (state is AuthAuthenticated) {
-            Navigator.pop(context);
-          }
+          // Navigation to HomeScreen is handled by the global AuthBloc
+          // listener in main.dart via pushAndRemoveUntil.
         },
         child: SafeArea(
           child: SingleChildScrollView(
@@ -65,29 +66,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   Text(
                     l10n.joinNewsly,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.primary,
+                      color: cs.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.registerSubtitle,
-                    style: TextStyle(fontSize: 15, color: cs.onSurface.withValues(alpha: 0.6)),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: cs.onSurface.withValues(alpha: 0.6),
+                    ),
                   ),
                   const SizedBox(height: 36),
                   TextFormField(
                     controller: _nameController,
-                    decoration: InputDecoration(labelText: l10n.displayNameLabel),
-                    validator: (v) => v!.trim().isEmpty ? l10n.nameRequired : null,
+                    decoration: InputDecoration(
+                      labelText: l10n.displayNameLabel,
+                    ),
+                    validator: (v) =>
+                        v!.trim().isEmpty ? l10n.nameRequired : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(labelText: l10n.emailLabel),
-                    validator: (v) => v!.trim().isEmpty ? l10n.emailRequired : null,
+                    validator: (v) =>
+                        v!.trim().isEmpty ? l10n.emailRequired : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -96,13 +104,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.passwordLabel,
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
-                    validator: (v) => v!.length < 6 ? l10n.passwordMinLength : null,
+                    validator: (v) =>
+                        v!.length < 6 ? l10n.passwordMinLength : null,
                   ),
                   const SizedBox(height: 28),
                   BlocBuilder<AuthBloc, AuthState>(
@@ -114,7 +127,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : Text(l10n.createAccount),
                       );
@@ -124,8 +140,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(l10n.alreadyHaveAccount,
-                          style: TextStyle(color: cs.onSurface.withValues(alpha: 0.6))),
+                      Text(
+                        l10n.alreadyHaveAccount,
+                        style: TextStyle(
+                          color: cs.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Text(
