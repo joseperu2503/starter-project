@@ -111,6 +111,16 @@ Each entry explains what was added, why, and where it lives.
 - **What**: Remote Config parameter `article_card_style` controls whether the home feed renders as a compact list (`list`) or large image cards (`card`). Firebase A/B Testing experiment `article_card_style_test_android` splits users 50/50. Every article open fires an `article_opened` Analytics event with `card_style`, `article_id`, and `category` parameters for measuring CTR per variant.
 - **Why**: Demonstrates production-grade experimentation infrastructure. Allows data-driven UI decisions without shipping a new app version.
 
+### 21. Premium articles with paywall gate
+- **Where**: `frontend2/lib/features/articles/domain/entities/article_entity.dart`, `frontend2/lib/features/articles/presentation/screens/article_detail_screen.dart`, `frontend2/lib/features/articles/presentation/screens/upload_article_screen.dart`
+- **What**: Articles can be marked as premium via an `isPremium` toggle in the upload form. When a user opens a premium article, a non-dismissible modal bottom sheet blocks the content and prompts subscription. The sheet cannot be bypassed — closing it (via "Subscribe" or "Maybe later") navigates back to the feed. A gold PREMIUM badge is shown on the article header.
+- **Why**: Simulates a real monetization gate. Demonstrates conditional navigation flow, non-dismissible modals, and field-level content access control.
+
+### 22. Premium remarketing A/B test
+- **Where**: `frontend2/lib/core/services/remote_config_service.dart`, `frontend2/lib/core/services/analytics_service.dart`, `frontend2/lib/features/articles/presentation/screens/article_detail_screen.dart`
+- **What**: Remote Config parameter `premium_remarketing_offer` controls a second-chance offer shown after a user dismisses the paywall with "Maybe later". Control group sees nothing; treatment group sees a discount offer sheet (e.g. 20% off first month) with a green CTA. Four Analytics events track the full funnel: `premium_paywall_shown`, `premium_dismissed`, `premium_remarketing_shown`, `premium_subscribe_tapped` (with `source` and `offer` parameters). The true business metric is `purchase` revenue, measurable via RevenueCat when real payments are integrated.
+- **Why**: Models a real revenue optimization experiment. Demonstrates multi-step funnel tracking, parametric offer configuration, and the connection between behavioral Analytics events and business outcomes.
+
 ---
 
 ## Ideas (not yet implemented)
@@ -121,3 +131,4 @@ Each entry explains what was added, why, and where it lives.
 - Personalized feed — articles only from followed authors
 - CI/CD with GitHub Actions for automated `flutter test` and `firebase deploy`
 - Flutter Web dashboard for desktop article management
+- RevenueCat integration for real subscription payments tied to the remarketing A/B test
